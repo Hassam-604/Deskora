@@ -1,0 +1,148 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <!-- Dark Theme Palette -->
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#0B0F19" />
+                    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#111827" />
+                    <SolidColorBrush x:Key="SurfaceBackgroundBrush" Color="#1F2937" />
+                    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#283548" />
+                    <SolidColorBrush x:Key="SurfaceCardBrush" Color="#162032" />
+                    <SolidColorBrush x:Key="BorderSubtleBrush" Color="#374151" />
+                    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F9FAFB" />
+                    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9CA3AF" />
+                    <SolidColorBrush x:Key="TextMutedBrush" Color="#6B7280" />
+                    <SolidColorBrush x:Key="AccentBrandBrush" Color="#6366F1" />
+                    <SolidColorBrush x:Key="AccentBrandHoverBrush" Color="#4F46E5" />
+                    <SolidColorBrush x:Key="AccentBrandMutedBrush" Color="#2E2F5B" />
+                    <SolidColorBrush x:Key="BadgePlannedBgBrush" Color="#312E81" />
+                    <SolidColorBrush x:Key="BadgePlannedFgBrush" Color="#A5B4FC" />
+                    <SolidColorBrush x:Key="StatusBarBgBrush" Color="#0D131F" />
+                </ResourceDictionary>
+
+                <!-- Light Theme Palette -->
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F3F4F6" />
+                    <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="SurfaceBackgroundBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#F3F4F6" />
+                    <SolidColorBrush x:Key="SurfaceCardBrush" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="BorderSubtleBrush" Color="#E5E7EB" />
+                    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#111827" />
+                    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#4B5563" />
+                    <SolidColorBrush x:Key="TextMutedBrush" Color="#9CA3AF" />
+                    <SolidColorBrush x:Key="AccentBrandBrush" Color="#4F46E5" />
+                    <SolidColorBrush x:Key="AccentBrandHoverBrush" Color="#4338CA" />
+                    <SolidColorBrush x:Key="AccentBrandMutedBrush" Color="#EEF2FF" />
+                    <SolidColorBrush x:Key="BadgePlannedBgBrush" Color="#E0E7FF" />
+                    <SolidColorBrush x:Key="BadgePlannedFgBrush" Color="#3730A3" />
+                    <SolidColorBrush x:Key="StatusBarBgBrush" Color="#E5E7EB" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!-- Global Typography & Base Settings -->
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="avares://Avalonia.Fonts.Inter/Assets/Inter-VariableFont_slnt,wght.ttf#Inter, Segoe UI, sans-serif" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <!-- Card Styles -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+
+    <Style Selector="Border.hero-banner">
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#4F46E5" />
+                    <GradientStop Offset="1" Color="#7C3AED" />
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="24" />
+    </Style>
+
+    <!-- Sidebar Navigation Buttons -->
+    <Style Selector="Button.nav-button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.nav-button:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button.nav-button.selected">
+        <Setter Property="Background" Value="{DynamicResource AccentBrandMutedBrush}" />
+    </Style>
+
+    <Style Selector="Button.nav-button.selected TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrandBrush}" />
+    </Style>
+
+    <Style Selector="Button.nav-button.selected Path">
+        <Setter Property="Fill" Value="{DynamicResource AccentBrandBrush}" />
+    </Style>
+
+    <!-- Primary Action Buttons -->
+    <Style Selector="Button.primary-btn">
+        <Setter Property="Background" Value="{DynamicResource AccentBrandBrush}" />
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="Button.primary-btn:pointerover">
+        <Setter Property="Background" Value="{DynamicResource AccentBrandHoverBrush}" />
+    </Style>
+
+    <!-- Subtle Outline Buttons -->
+    <Style Selector="Button.secondary-btn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.secondary-btn:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+    </Style>
+
+    <!-- Badge Pills -->
+    <Style Selector="Border.badge-pill">
+        <Setter Property="Background" Value="{DynamicResource BadgePlannedBgBrush}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="8,2" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="TextBlock.badge-text">
+        <Setter Property="Foreground" Value="{DynamicResource BadgePlannedFgBrush}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+</Styles>

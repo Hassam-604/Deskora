@@ -1,0 +1,161 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+             x:Class="Deskora.App.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,28,32,36" Spacing="24">
+            <!-- Header -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="Settings &amp; Preferences"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <TextBlock Text="Manage Deskora appearance, inspect runtime environment, and test error handling systems."
+                           FontSize="13.5"
+                           Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- Appearance Section (Fully Functional in 0.1.0) -->
+            <Border Classes="card">
+                <StackPanel Spacing="16">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Appearance Theme"
+                                   FontSize="15"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Switch between System Default, Clean Light, or Sleek Dark mode. Changes apply immediately across the interface."
+                                   FontSize="12.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <!-- Theme Switcher Buttons -->
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <!-- System Default -->
+                        <Button Classes="secondary-btn"
+                                Command="{Binding SetSystemThemeCommand}"
+                                Padding="16,10">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Path Data="{StaticResource IconMonitor}"
+                                      Fill="{DynamicResource TextPrimaryBrush}"
+                                      Width="16" Height="16"
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center" />
+                                <TextBlock Text="System Default"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Light Theme -->
+                        <Button Classes="secondary-btn"
+                                Command="{Binding SetLightThemeCommand}"
+                                Padding="16,10">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Path Data="{StaticResource IconSun}"
+                                      Fill="{DynamicResource TextPrimaryBrush}"
+                                      Width="16" Height="16"
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center" />
+                                <TextBlock Text="Light Mode"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Dark Theme -->
+                        <Button Classes="secondary-btn"
+                                Command="{Binding SetDarkThemeCommand}"
+                                Padding="16,10">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Path Data="{StaticResource IconMoon}"
+                                      Fill="{DynamicResource TextPrimaryBrush}"
+                                      Width="16" Height="16"
+                                      Stretch="Uniform"
+                                      VerticalAlignment="Center" />
+                                <TextBlock Text="Dark Mode"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Selected Theme Readout -->
+                    <Border Background="{DynamicResource SurfaceHoverBrush}"
+                            CornerRadius="8"
+                            Padding="12,8"
+                            HorizontalAlignment="Left">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="Current Preference:"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource TextMutedBrush}" />
+                            <TextBlock Text="{Binding SelectedTheme}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource AccentBrandBrush}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Error Handling & Diagnostics Verification -->
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Error Handling &amp; Alert System Test"
+                                   FontSize="15"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Verify that application alerts, warning notices, and error banners render and dismiss cleanly without crashing."
+                                   FontSize="12.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button Classes="secondary-btn"
+                                Command="{Binding TriggerTestNotificationCommand}"
+                                Content="Trigger Info Alert" />
+
+                        <Button Classes="secondary-btn"
+                                Command="{Binding TriggerTestWarningCommand}"
+                                Content="Trigger Warning Alert" />
+
+                        <Button Classes="secondary-btn"
+                                Command="{Binding TriggerTestErrorCommand}"
+                                Content="Trigger Error Alert" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- System & Runtime Diagnostics -->
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Runtime Environment &amp; Specifications"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                    <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <!-- Version -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Deskora Version" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding AppVersion}" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+
+                        <!-- .NET -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Target Framework" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DotNetVersion}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+
+                        <!-- Avalonia -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="UI Framework" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding AvaloniaVersion}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+
+                        <!-- Arch -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Architecture" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Architecture}" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

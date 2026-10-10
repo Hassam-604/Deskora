@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+             x:Class="Deskora.App.Views.AboutView"
+             x:DataType="vm:AboutViewModel">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,28,32,36" Spacing="22">
+            <!-- App Identity Card -->
+            <Border Classes="card">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                        <Border Width="48" Height="48"
+                                Background="{DynamicResource AccentBrandBrush}"
+                                CornerRadius="12">
+                            <Path Data="{StaticResource IconLayout}"
+                                  Fill="#FFFFFF"
+                                  Width="24" Height="24"
+                                  Stretch="Uniform"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Border>
+
+                        <StackPanel VerticalAlignment="Center" Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding AppName}"
+                                           FontSize="22"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <Border Classes="badge-pill" VerticalAlignment="Center">
+                                    <TextBlock Classes="badge-text" Text="{Binding Version}" />
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text="{Binding Tagline}"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding Description}"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- Product Philosophy & Architecture Notes -->
+            <Border Classes="card">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="Product Principles &amp; Architecture"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,14,10">
+                            <TextBlock Text="• Safety &amp; Clean Rollback First" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="System modifications are always backed by tested restore operations. No silent registry writes or background telemetry." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="14,0,0,10">
+                            <TextBlock Text="• Isolated Platform Services" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="Windows-specific Win32/COM integrations are strictly isolated from cross-platform Avalonia UI presentation code." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="0" Grid.Row="1" Spacing="4" Margin="0,10,14,0">
+                            <TextBlock Text="• Zero Fake Buttons" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="Unimplemented capabilities are explicitly identified as roadmap items rather than fake interactive controls." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="1" Spacing="4" Margin="14,10,0,0">
+                            <TextBlock Text="• Performance &amp; Resource Respect" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="Deskora is built with strict memory and CPU budgets so your system stays fast and responsive." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Technology Stack -->
+            <Border Classes="card">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Technology Stack"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                    <Grid ColumnDefinitions="160,*" RowDefinitions="Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Language &amp; Runtime" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="C# 12 / .NET 8.0 LTS" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="UI Framework" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Avalonia UI 11.2.5 (Fluent Design Theme)" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="MVVM Toolkit" FontSize="13" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="CommunityToolkit.Mvvm (Source Generators)" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,4" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- License Card -->
+            <Border Classes="card">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Licensing Information"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock Text="{Binding LicenseNotice}"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

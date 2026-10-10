@@ -1,0 +1,232 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+             xmlns:models="clr-namespace:Deskora.Core.Models;assembly=Deskora.Core"
+             xmlns:conv="using:Deskora.App.Converters"
+             x:Class="Deskora.App.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+
+    <UserControl.Resources>
+        <conv:IconKeyToGeometryConverter x:Key="IconConverter" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,28,32,36" Spacing="24">
+
+            <!-- Hero Banner -->
+            <Border Classes="hero-banner">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" Spacing="10" VerticalAlignment="Center">
+                        <Border Background="#3730A3"
+                                CornerRadius="12"
+                                Padding="10,3"
+                                HorizontalAlignment="Left">
+                            <TextBlock Text="Milestone 0.1.0 • Architecture &amp; App Shell"
+                                       Foreground="#E0E7FF"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                        </Border>
+
+                        <TextBlock Text="Welcome to Deskora"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="#FFFFFF" />
+
+                        <TextBlock Text="A modern desktop personalization studio engineered with performance, safety, and rock-solid recovery. Explore the planned modules below to view their technical designs."
+                                   FontSize="13.5"
+                                   Foreground="#E0E7FF"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="640" />
+                    </StackPanel>
+
+                    <!-- Hero Visual Glyph -->
+                    <Border Grid.Column="1"
+                            Width="74" Height="74"
+                            Background="#312E81"
+                            CornerRadius="20"
+                            Margin="20,0,0,0"
+                            VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconMonitor}"
+                              Fill="#FFFFFF"
+                              Width="38" Height="38"
+                              Stretch="Uniform"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Status Metrics Summary -->
+            <Grid ColumnDefinitions="*,*,*">
+                <!-- Status 1 -->
+                <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="System Integrity"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="Unaltered (Safe)"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="#10B981" />
+                        <TextBlock Text="Zero registry or shell alterations active"
+                                   FontSize="11.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Status 2 -->
+                <Border Grid.Column="1" Classes="card" Margin="4,0,4,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Active Presets"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="0 Profiles"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Layout &amp; wallpaper presets unlock in 0.5.0"
+                                   FontSize="11.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Status 3 -->
+                <Border Grid.Column="2" Classes="card" Margin="8,0,0,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Planned Modules"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="6 Feature Areas"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource AccentBrandBrush}" />
+                        <TextBlock Text="Structured in planned sequential milestones"
+                                   FontSize="11.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Feature Roadmap Cards -->
+            <StackPanel Spacing="12">
+                <TextBlock Text="Feature Modules Roadmap"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <ItemsControl ItemsSource="{Binding PlannedFeatures}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="models:FeatureInfo">
+                            <Border Classes="card"
+                                    Width="360"
+                                    MinHeight="165"
+                                    Margin="0,0,14,14">
+                                <Grid RowDefinitions="Auto,*,Auto">
+                                    <!-- Header Row -->
+                                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,8">
+                                        <!-- Icon -->
+                                        <Border Grid.Column="0"
+                                                Width="32" Height="32"
+                                                Background="{DynamicResource AccentBrandMutedBrush}"
+                                                CornerRadius="8"
+                                                Margin="0,0,10,0">
+                                            <Path Data="{Binding IconKey, Converter={StaticResource IconConverter}}"
+                                                  Fill="{DynamicResource AccentBrandBrush}"
+                                                  Width="16" Height="16"
+                                                  Stretch="Uniform"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                                        </Border>
+
+                                        <!-- Title -->
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Title}"
+                                                   FontSize="14.5"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   VerticalAlignment="Center" />
+
+                                        <!-- Milestone Pill -->
+                                        <Border Grid.Column="2"
+                                                Classes="badge-pill"
+                                                VerticalAlignment="Center">
+                                            <TextBlock Classes="badge-text"
+                                                       Text="{Binding MilestoneTag, StringFormat='v{0}'}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <!-- Description -->
+                                    <TextBlock Grid.Row="1"
+                                               Text="{Binding Description}"
+                                               FontSize="12.5"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,12" />
+
+                                    <!-- Action Button -->
+                                    <Button Grid.Row="2"
+                                            Classes="secondary-btn"
+                                            Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).NavigateToFeatureCommand}"
+                                            CommandParameter="{Binding PageKey}"
+                                            HorizontalAlignment="Left">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="View Module Plan" FontSize="12" />
+                                            <Path Data="{StaticResource IconChevronRight}"
+                                                  Fill="{DynamicResource TextSecondaryBrush}"
+                                                  Width="10" Height="10"
+                                                  Stretch="Uniform"
+                                                  VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- Presets Empty State -->
+            <StackPanel Spacing="10">
+                <TextBlock Text="Recent Presets &amp; Profiles"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <Border Classes="card" Padding="28">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                        <Border Width="48" Height="48"
+                                Background="{DynamicResource SurfaceHoverBrush}"
+                                CornerRadius="24"
+                                HorizontalAlignment="Center">
+                            <Path Data="{StaticResource IconLayout}"
+                                  Fill="{DynamicResource TextMutedBrush}"
+                                  Width="22" Height="22"
+                                  Stretch="Uniform"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Border>
+
+                        <TextBlock Text="No Presets Saved Yet"
+                                   FontSize="15"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                        <TextBlock Text="Custom multi-display wallpaper pairings and desktop icon arrangements will be captured and managed here once Milestone 0.5.0 is implemented."
+                                   FontSize="12.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   MaxWidth="480" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,231 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+        xmlns:models="clr-namespace:Deskora.Core.Models;assembly=Deskora.Core"
+        xmlns:conv="using:Deskora.App.Converters"
+        x:Class="Deskora.App.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Deskora — Desktop Personalization Studio"
+        Width="1120" Height="740"
+        MinWidth="920" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource AppBackgroundBrush}">
+
+    <Window.Resources>
+        <conv:IconKeyToGeometryConverter x:Key="IconConverter" />
+    </Window.Resources>
+
+    <Grid ColumnDefinitions="250,*">
+        <!-- Sidebar Navigation -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource SidebarBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto,*,Auto,Auto">
+                <!-- App Header / Brand -->
+                <Border Grid.Row="0" Padding="20,22,20,16">
+                    <StackPanel Spacing="6">
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <!-- Logo Glyph Icon -->
+                            <Border Width="34" Height="34"
+                                    Background="{DynamicResource AccentBrandBrush}"
+                                    CornerRadius="8"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconLayout}"
+                                      Fill="#FFFFFF"
+                                      Width="18" Height="18"
+                                      Stretch="Uniform"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                            </Border>
+
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="Deskora"
+                                           FontSize="19"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Personalization Studio"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Version pill -->
+                        <Border Classes="badge-pill" HorizontalAlignment="Left" Margin="0,4,0,0">
+                            <TextBlock Classes="badge-text" Text="v0.1.0 Foundation" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- Primary Navigation Section -->
+                <ScrollViewer Grid.Row="1" Margin="12,4,12,8">
+                    <ItemsControl ItemsSource="{Binding PrimaryNavItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:NavigationItem">
+                                <Button Classes="nav-button"
+                                        Classes.selected="{Binding IsSelected}"
+                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).NavigateCommand}"
+                                        CommandParameter="{Binding Key}"
+                                        Margin="0,2">
+                                    <Grid ColumnDefinitions="26,*,Auto">
+                                        <!-- Icon -->
+                                        <Path Grid.Column="0"
+                                              Data="{Binding IconKey, Converter={StaticResource IconConverter}}"
+                                              Fill="{DynamicResource TextSecondaryBrush}"
+                                              Width="16" Height="16"
+                                              Stretch="Uniform"
+                                              VerticalAlignment="Center" />
+
+                                        <!-- Label -->
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Label}"
+                                                   FontSize="13.5"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10,0,0,0" />
+
+                                        <!-- Planned Milestone Badge -->
+                                        <Border Grid.Column="2"
+                                                Classes="badge-pill"
+                                                IsVisible="{Binding BadgeText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                Padding="6,1">
+                                            <TextBlock Classes="badge-text"
+                                                       Text="{Binding BadgeText}"
+                                                       FontSize="10" />
+                                        </Border>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Divider -->
+                <Border Grid.Row="2"
+                        Height="1"
+                        Background="{DynamicResource BorderSubtleBrush}"
+                        Margin="16,4,16,10" />
+
+                <!-- Secondary Navigation (Settings, About) -->
+                <StackPanel Grid.Row="3" Margin="12,0,12,18" Spacing="3">
+                    <ItemsControl ItemsSource="{Binding SecondaryNavItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:NavigationItem">
+                                <Button Classes="nav-button"
+                                        Classes.selected="{Binding IsSelected}"
+                                        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).NavigateCommand}"
+                                        CommandParameter="{Binding Key}"
+                                        Margin="0,2">
+                                    <Grid ColumnDefinitions="26,*">
+                                        <Path Grid.Column="0"
+                                              Data="{Binding IconKey, Converter={StaticResource IconConverter}}"
+                                              Fill="{DynamicResource TextSecondaryBrush}"
+                                              Width="16" Height="16"
+                                              Stretch="Uniform"
+                                              VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Label}"
+                                                   FontSize="13.5"
+                                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10,0,0,0" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main Workspace Area -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto">
+            <!-- Notification / Alert Bar -->
+            <Border Grid.Row="0"
+                    IsVisible="{Binding CurrentNotification, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    Background="#1E293B"
+                    BorderBrush="{DynamicResource AccentBrandBrush}"
+                    BorderThickness="0,0,0,1"
+                    Padding="16,10">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Path Grid.Column="0"
+                          Data="{StaticResource IconInfo}"
+                          Fill="{DynamicResource AccentBrandBrush}"
+                          Width="16" Height="16"
+                          Stretch="Uniform"
+                          VerticalAlignment="Center"
+                          Margin="0,0,10,0" />
+
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding CurrentNotification.Message}"
+                               Foreground="#FFFFFF"
+                               FontSize="13"
+                               VerticalAlignment="Center" />
+
+                    <Button Grid.Column="2"
+                            Classes="secondary-btn"
+                            Padding="8,4"
+                            Command="{Binding DismissNotificationCommand}"
+                            ToolTip.Tip="Dismiss notification">
+                        <Path Data="{StaticResource IconClose}"
+                              Fill="{DynamicResource TextPrimaryBrush}"
+                              Width="12" Height="12"
+                              Stretch="Uniform" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Active Page Content Host -->
+            <ContentControl Grid.Row="1"
+                            Content="{Binding CurrentPage}"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch" />
+
+            <!-- Bottom Status Bar -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource StatusBarBgBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="18,7">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                    <!-- Current Page -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock Text="Active View:"
+                                   FontSize="11.5"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="{Binding CurrentPage.Title}"
+                                   FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </StackPanel>
+
+                    <!-- Theme Mode Status -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="14,0">
+                        <TextBlock Text="{Binding CurrentThemeStatus}"
+                                   FontSize="11.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <!-- Engine / State -->
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="14,0">
+                        <TextBlock Text="Status:"
+                                   FontSize="11.5"
+                                   Foreground="{DynamicResource TextMutedBrush}" />
+                        <TextBlock Text="{Binding CurrentStatus}"
+                                   FontSize="11.5"
+                                   FontWeight="SemiBold"
+                                   Foreground="#10B981" />
+                    </StackPanel>
+
+                    <!-- Platform Tag -->
+                    <TextBlock Grid.Column="4"
+                               Text=".NET 8.0 • Avalonia UI"
+                               FontSize="11.5"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
