@@ -74,4 +74,16 @@
     <!-- Trash / Delete -->
     <StreamGeometry x:Key="IconTrash">M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z</StreamGeometry>
 
+    <!-- Download -->
+    <StreamGeometry x:Key="IconDownload">M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z</StreamGeometry>
+
+    <!-- Cancel / Abort -->
+    <StreamGeometry x:Key="IconCancel">M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z</StreamGeometry>
+
+    <!-- Gallery / Photo Collection -->
+    <StreamGeometry x:Key="IconGallery">M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z</StreamGeometry>
+
+    <!-- Offline / Network Disconnected -->
+    <StreamGeometry x:Key="IconOffline">M23.64 7c-.45-.34-4.93-3.95-11.64-3.95-1.5 0-2.89.19-4.14.53L19.37 15.1 23.64 7zM3.27 1.44L2 2.72l2.05 2.06C1.98 5.75.54 6.78.36 7l11.63 14.49.01.01.01-.01 3.9-4.86 3.32 3.32 1.27-1.27L3.27 1.44z</StreamGeometry>
+
 </ResourceDictionary>

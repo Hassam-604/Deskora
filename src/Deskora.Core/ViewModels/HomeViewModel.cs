@@ -31,6 +31,15 @@ public partial class HomeViewModel : ViewModelBase
         ));
 
         PlannedFeatures.Add(new FeatureInfo(
+            "Curated Gallery",
+            "Explore approved, high-resolution online wallpapers with secure downloading, offline caching, and license attribution.",
+            "0.3.0",
+            FeatureStatus.Active,
+            NavigationPageKey.Gallery,
+            "IconGallery"
+        ));
+
+        PlannedFeatures.Add(new FeatureInfo(
             "Live & Video Wallpapers",
             "Hardware-accelerated live video and dynamic interactive wallpapers with low resource consumption.",
             "0.6.0",

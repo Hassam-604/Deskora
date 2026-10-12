@@ -7,6 +7,7 @@ public enum NavigationPageKey
 {
     Home,
     Wallpapers,
+    Gallery,
     LiveWallpapers,
     Icons,
     Layouts,

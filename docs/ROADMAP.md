@@ -10,7 +10,7 @@ This document outlines the sequential release milestones for **Deskora**. Develo
 |---|---|---|---|
 | **0.1.0** | **Foundation and App Shell** | **Completed** | Solution architecture, navigation shell, design system, theme engine, tests |
 | **0.2.0** | **Local Wallpapers** | **Completed** | Local folder browsing, multi-monitor configuration, aspect ratio fit, undo/restore |
-| **0.3.0** | **Curated Downloadable Gallery** | Planned | Approved asset catalog, previews, licensing metadata, download manager, offline storage |
+| **0.3.0** | **Curated Downloadable Gallery** | **Completed** | Approved asset catalog, previews, licensing metadata, download manager, offline storage |
 | **0.4.0** | **Icon Customization** | Planned | Desktop shortcut icons, Windows shell cache refresh, backup points, safe reset |
 | **0.5.0** | **Desktop Layouts and Presets** | Planned | SysListView32 icon coordinate capture, multi-monitor resolution restoration, named profiles |
 | **0.6.0** | **Live Wallpaper Proof of Concept** | Planned | WorkerW canvas hooking, video playback engine, auto-pause on fullscreen, crash isolation |
@@ -31,20 +31,23 @@ This document outlines the sequential release milestones for **Deskora**. Develo
 - Build error handling and notification banner.
 - Author foundational unit tests and documentation.
 
-### 0.2.0 — Local Wallpapers (Current)
+### 0.2.0 — Local Wallpapers
 - Implement `IWallpaperService` with Windows `IDesktopWallpaper` COM API and `SystemParametersInfo` fallback.
 - Support local image indexing and fast zero-allocation header decoding (PNG, JPG, WebP, BMP).
 - Multi-monitor support: detect display topologies, resolutions, and assign wallpapers per monitor or across all displays.
 - Implement capture of original desktop wallpaper state prior to changes for safe 1-click restoration/undo.
 - Implement responsive thumbnail caching without UI blocking using Avalonia `Bitmap.DecodeToWidth`.
 - Implement user-controlled folder scanning, multi-image picking, favorites tracking, and local JSON preferences persistence.
-- Author comprehensive unit tests covering ViewModel, header decoders, and persistence (33 automated tests passing).
+- Author comprehensive unit tests covering ViewModel, header decoders, and persistence.
 
 ### 0.3.0 — Curated Downloadable Gallery
-- Curated asset catalog using approved, verified open licenses.
-- Download service with progress indication, retry logic, and cancellation.
-- Hash integrity checking for downloaded assets.
-- Offline-first storage management with size quotas.
+- Curated asset catalog with hybrid multi-source integration (Wallhaven 4K desktop library, Nekos Art archive, and offline JSON fallback).
+- Strict download safety: HTTPS enforcement, allowed image formats, safety size quotas (50 MB cap).
+- Download service with streaming progress indication, retry logic, cancellation, and partial file cleanup.
+- SHA-256 hash integrity checking for downloaded assets with corruption rejection.
+- Offline-first storage management: downloaded assets are cached locally in app data and remain accessible without internet.
+- Rich UI with search debouncing, category filtering (Nature, Space, Abstract, Architecture, Minimal, Anime), asset detail inspector, and 1-click wallpaper application.
+- Comprehensive unit test coverage across catalog parsing, download pipeline, multi-source orchestration, and ViewModel lifecycle (57 automated tests passing).
 
 ### 0.4.0 — Icon Customization
 - Implement `IIconService` using `IShellLinkW` for `.lnk` shortcuts.

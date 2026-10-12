@@ -265,6 +265,7 @@ public class WallpapersViewModelTests : IDisposable
             _filePickerService,
             _errorService
         );
+        await vm.InitializeAsync();
 
         var invalidItem = new WallpaperItem(
             filePath: "C:\\NonExistent\\fake.png",

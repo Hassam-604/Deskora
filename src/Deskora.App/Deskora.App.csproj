@@ -20,4 +20,10 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="11.2.5" Condition="'$(Configuration)' == 'Debug'" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Gallery\catalog.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

@@ -1,0 +1,565 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+             xmlns:models="clr-namespace:Deskora.Core.Models;assembly=Deskora.Core"
+             xmlns:conv="using:Deskora.App.Converters"
+             x:Class="Deskora.App.Views.GalleryView"
+             x:DataType="vm:GalleryViewModel">
+
+    <UserControl.Resources>
+        <conv:GalleryStateConverter x:Key="StateConverter" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- Gallery Card Button Wrapper -->
+        <Style Selector="Button.gallery-card-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.gallery-card-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <!-- Gallery Card Container -->
+        <Style Selector="Border.gallery-card">
+            <Setter Property="RenderTransform" Value="scale(1) translateY(0px)" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" Easing="CubicEaseOut" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+                    <BrushTransition Property="Background" Duration="0:0:0.2" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- Card Hover Effect -->
+        <Style Selector="Button.gallery-card-btn:pointerover Border.gallery-card">
+            <Setter Property="RenderTransform" Value="scale(1.02) translateY(-2px)" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+
+        <!-- Category Filter Pill Styles -->
+        <Style Selector="Button.category-pill">
+            <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.category-pill:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
+        <!-- Sleek Search Button -->
+        <Style Selector="Button.search-action-btn">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Height" Value="30" />
+        </Style>
+        <Style Selector="Button.search-action-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandHoverBrush}" />
+        </Style>
+
+        <!-- Clear Search Button Inside Box -->
+        <Style Selector="Button.search-clear-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Height" Value="30" />
+        </Style>
+        <Style Selector="Button.search-clear-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
+        <!-- Load More Pill Button -->
+        <Style Selector="Button.load-more-btn">
+            <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="CornerRadius" Value="24" />
+            <Setter Property="Padding" Value="24,10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.load-more-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandMutedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandHoverBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*" Margin="28,18,28,20">
+        <!-- Row 0: Top Header & Global Status Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="Curated Wallpaper Gallery"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                    <Border Classes="badge-pill" Background="{DynamicResource AccentBrandMutedBrush}" VerticalAlignment="Center">
+                        <TextBlock Classes="badge-text" Text="{Binding CatalogSource}" Foreground="{DynamicResource AccentBrandBrush}" />
+                    </Border>
+                </StackPanel>
+                <TextBlock Text="Discover, search, and download from 1,000s of vetted, ultra high-resolution 4K wallpapers. Stored assets remain accessible offline."
+                           FontSize="13"
+                           Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextWrapping="Wrap"
+                           MaxWidth="700" />
+            </StackPanel>
+
+            <!-- Storage and Refresh Controls -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Border Background="{DynamicResource SurfaceCardBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="12,8"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <PathIcon Data="{StaticResource IconCheck}" Width="14" Height="14" Foreground="{DynamicResource AccentBrandBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding StorageUsedLabel}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <Button Command="{Binding RefreshCatalogCommand}"
+                        Classes="secondary-btn"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="Reload approved catalog">
+                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <PathIcon Data="{StaticResource IconRefresh}" Width="13" Height="13" VerticalAlignment="Center" />
+                        <TextBlock Text="Refresh" FontSize="12" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Row 1: Main Workspace Split (Left: Catalog Area with Integrated Search & Filter; Right: Asset Details Drawer) -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+            <!-- Column 0: Catalog Workspace -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*" Margin="0,0,16,0">
+                <!-- Search Box Row (Aligned directly to Catalog Grid) -->
+                <Border Grid.Row="0" Margin="0,0,0,10">
+                    <TextBox Text="{Binding SearchQuery, Mode=TwoWay}"
+                             Watermark="Search 1,000s of wallpapers (e.g. Batman, Cars, Nature, Anime, Space, Cyberpunk)..."
+                             Height="40"
+                             VerticalContentAlignment="Center"
+                             CornerRadius="8"
+                             Padding="12,0"
+                             BorderBrush="{DynamicResource BorderSubtleBrush}">
+                        <TextBox.InnerLeftContent>
+                            <PathIcon Data="{StaticResource IconSearch}"
+                                      Width="15"
+                                      Height="15"
+                                      Margin="10,0,8,0"
+                                      VerticalAlignment="Center"
+                                      Foreground="{DynamicResource TextMutedBrush}" />
+                        </TextBox.InnerLeftContent>
+                        <TextBox.InnerRightContent>
+                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,0,6,0" VerticalAlignment="Center">
+                                <Button Command="{Binding ClearSearchCommand}"
+                                        Classes="search-clear-btn"
+                                        ToolTip.Tip="Clear search input"
+                                        IsVisible="{Binding SearchQuery, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconClose}" Width="10" Height="10" VerticalAlignment="Center" />
+                                        <TextBlock Text="Clear" FontSize="11" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{Binding SearchCommand}"
+                                        Classes="search-action-btn"
+                                        ToolTip.Tip="Search wallpapers">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconSearch}" Width="12" Height="12" VerticalAlignment="Center" />
+                                        <TextBlock Text="Search" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </TextBox.InnerRightContent>
+                    </TextBox>
+                </Border>
+
+                <!-- Category Pills Row -->
+                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="0,0,0,16">
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2,0,2" VerticalAlignment="Center">
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="All"
+                                Content="All Wallpapers" />
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="Nature"
+                                Content="Nature" />
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="Space"
+                                Content="Space" />
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="Abstract"
+                                Content="Abstract" />
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="Architecture"
+                                Content="Architecture" />
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="Minimal"
+                                Content="Minimal" />
+                        <Button Classes="category-pill"
+                                Command="{Binding SetCategoryFilterCommand}"
+                                CommandParameter="Anime"
+                                Content="Anime" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Cards Grid & Load More Container -->
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="16">
+                        <!-- Loading Progress Indicator -->
+                        <ProgressBar IsIndeterminate="True"
+                                     IsVisible="{Binding IsLoading}"
+                                     Height="3"
+                                     Foreground="{DynamicResource AccentBrandBrush}" />
+
+                        <!-- Empty State -->
+                        <Border Classes="card"
+                                IsVisible="{Binding !DisplayedEntries.Count}"
+                                HorizontalAlignment="Stretch"
+                                Padding="40">
+                            <StackPanel HorizontalAlignment="Center" Spacing="8">
+                                <PathIcon Data="{StaticResource IconGallery}" Width="36" Height="36" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+                                <TextBlock Text="No wallpapers found matching your search."
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimaryBrush}"
+                                           HorizontalAlignment="Center" />
+                                <Button Command="{Binding ClearSearchCommand}"
+                                        Classes="secondary-btn"
+                                        HorizontalAlignment="Center"
+                                        Content="Clear Filter &amp; Show All"
+                                        Margin="0,8,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Wallpaper Cards Wrap List -->
+                        <ItemsControl ItemsSource="{Binding DisplayedEntries}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal" ItemWidth="280" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="models:GalleryEntry">
+                                    <Button Classes="gallery-card-btn"
+                                            Command="{Binding $parent[UserControl].((vm:GalleryViewModel)DataContext).SelectEntryCommand}"
+                                            CommandParameter="{Binding}"
+                                            Margin="0,0,16,16">
+                                        <Border Classes="gallery-card card"
+                                                Width="264"
+                                                Padding="0"
+                                                ClipToBounds="True">
+                                            <Grid RowDefinitions="150,Auto">
+                                                <!-- Preview Image via non-blocking ImageHelper -->
+                                                <Border Grid.Row="0" Background="{DynamicResource SurfaceHoverBrush}">
+                                                    <Image conv:ImageHelper.SourceUrl="{Binding PreviewUrl}"
+                                                           conv:ImageHelper.DecodeWidth="360"
+                                                           Stretch="UniformToFill" />
+                                                </Border>
+
+                                                <!-- Card Info Footer with Clean Descriptive Title -->
+                                                <StackPanel Grid.Row="1" Spacing="6" Margin="14,12,14,14">
+                                                    <TextBlock Text="{Binding Title}"
+                                                               FontSize="14"
+                                                               FontWeight="Bold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               ToolTip.Tip="{Binding Title}" />
+
+                                                    <TextBlock Text="{Binding Author, StringFormat='By {0}'}"
+                                                               FontSize="12"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               TextTrimming="CharacterEllipsis" />
+
+                                                    <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                                                        <!-- Category Pill -->
+                                                        <Border Grid.Column="0"
+                                                                HorizontalAlignment="Left"
+                                                                Background="{DynamicResource SurfaceHoverBrush}"
+                                                                CornerRadius="4"
+                                                                Padding="6,2">
+                                                            <TextBlock Text="{Binding Category}"
+                                                                       FontSize="10"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                        </Border>
+
+                                                        <!-- Resolution Tag -->
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding ResolutionLabel}"
+                                                                   FontSize="10"
+                                                                   Foreground="{DynamicResource TextMutedBrush}"
+                                                                   VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Load More Wallpapers Button (Perfect Icon Alignment & Centering) -->
+                        <Border IsVisible="{Binding HasMorePages}"
+                                Margin="0,12,0,28"
+                                HorizontalAlignment="Center">
+                            <StackPanel Spacing="10" HorizontalAlignment="Center">
+                                <Button Command="{Binding LoadMoreCommand}"
+                                        Classes="load-more-btn"
+                                        IsEnabled="{Binding !IsLoadingMore}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconPlus}"
+                                                  Width="13"
+                                                  Height="13"
+                                                  VerticalAlignment="Center"
+                                                  Foreground="{DynamicResource AccentBrandBrush}" />
+                                        <TextBlock Text="Load More Wallpapers (Thousands Available)"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="13"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <ProgressBar IsIndeterminate="True"
+                                             IsVisible="{Binding IsLoadingMore}"
+                                             Height="3"
+                                             Width="240"
+                                             HorizontalAlignment="Center"
+                                             Foreground="{DynamicResource AccentBrandBrush}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Column 1: Asset Details Drawer (Completely Independent, Never Collides with Search) -->
+            <Border Grid.Column="1"
+                    Width="360"
+                    IsVisible="{Binding SelectedEntry, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Background="{DynamicResource SurfaceCardBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="1,0,0,0"
+                    Padding="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="16">
+                        <!-- Drawer Header & Close -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Grid.Column="0"
+                                       Text="Asset Details"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center" />
+                            <Button Grid.Column="1"
+                                    Command="{Binding SelectEntryCommand}"
+                                    CommandParameter="{x:Null}"
+                                    Classes="secondary-btn"
+                                    Padding="6,4">
+                                <PathIcon Data="{StaticResource IconClose}" Width="12" Height="12" />
+                            </Button>
+                        </Grid>
+
+                        <!-- Large Detail Preview Image via ImageHelper -->
+                        <Border CornerRadius="8"
+                                ClipToBounds="True"
+                                Height="200"
+                                Background="{DynamicResource SurfaceHoverBrush}">
+                            <Image conv:ImageHelper.SourceUrl="{Binding SelectedEntry.PreviewUrl}"
+                                   conv:ImageHelper.DecodeWidth="640"
+                                   Stretch="UniformToFill" />
+                        </Border>
+
+                        <!-- Title and Author -->
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding SelectedEntry.Title}"
+                                       FontSize="18"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="{Binding SelectedEntry.Author, StringFormat='Photographer / Creator: {0}'}"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </StackPanel>
+
+                        <!-- License and Source Information Box -->
+                        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                                CornerRadius="8"
+                                Padding="12">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Attribution &amp; License"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Foreground="{DynamicResource TextMutedBrush}" />
+                                <TextBlock Text="{Binding SelectedEntry.License}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentBrandBrush}" />
+                                <TextBlock Text="{Binding SelectedEntry.Source, StringFormat='Source: {0}'}"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Technical Specification Grid -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Specifications"
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextMutedBrush}" />
+
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Resolution:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,12,2" />
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedEntry.ResolutionLabel}" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Aspect Ratio:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,12,2" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedEntry.AspectRatioLabel}" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Format:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,12,2" />
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedEntry.FileExtension}" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Category:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,12,2" />
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedEntry.Category}" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,2,0,2" />
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Description -->
+                        <TextBlock Text="{Binding SelectedEntry.Description}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap" />
+
+                        <!-- Download Status & Action Panel -->
+                        <Border Background="{DynamicResource SurfaceHoverBrush}"
+                                CornerRadius="8"
+                                Padding="14">
+                            <StackPanel Spacing="10">
+                                <!-- Status: Downloading Progress -->
+                                <StackPanel Spacing="8"
+                                            IsVisible="{Binding SelectedRecord.State, Converter={StaticResource StateConverter}, ConverterParameter=IsDownloading}">
+                                    <TextBlock Text="Downloading Wallpaper..."
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    <ProgressBar Value="{Binding SelectedRecord.ProgressPercent}"
+                                                 Minimum="0"
+                                                 Maximum="100"
+                                                 Height="6"
+                                                 Foreground="{DynamicResource AccentBrandBrush}" />
+                                    <Button Command="{Binding CancelDownloadCommand}"
+                                            Classes="secondary-btn"
+                                            HorizontalAlignment="Center"
+                                            Margin="0,4,0,0">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <PathIcon Data="{StaticResource IconCancel}" Width="12" Height="12" VerticalAlignment="Center" />
+                                            <TextBlock Text="Cancel Download" FontSize="11" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Status: Downloaded -->
+                                <StackPanel Spacing="8"
+                                            IsVisible="{Binding SelectedRecord.State, Converter={StaticResource StateConverter}, ConverterParameter=IsDownloaded}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconCheck}" Width="14" Height="14" Foreground="{DynamicResource AccentBrandBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Stored Offline in Local Cache"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AccentBrandBrush}"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <!-- Set as Wallpaper Button -->
+                                    <Button Command="{Binding SetAsWallpaperCommand}"
+                                            Classes="primary-btn"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,4,0,0">
+                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <PathIcon Data="{StaticResource IconWallpaper}" Width="14" Height="14" VerticalAlignment="Center" />
+                                            <TextBlock Text="Set as Desktop Wallpaper" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <!-- Delete Local Asset -->
+                                    <Button Command="{Binding DeleteLocalAssetCommand}"
+                                            Classes="secondary-btn"
+                                            HorizontalAlignment="Stretch">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <PathIcon Data="{StaticResource IconTrash}" Width="12" Height="12" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+                                            <TextBlock Text="Remove Local Copy" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Status: Failed -->
+                                <StackPanel Spacing="8"
+                                            IsVisible="{Binding SelectedRecord.State, Converter={StaticResource StateConverter}, ConverterParameter=IsFailed}">
+                                    <TextBlock Text="Download Failed"
+                                               FontSize="12"
+                                               FontWeight="Bold"
+                                               Foreground="#EF4444" />
+                                    <TextBlock Text="{Binding SelectedRecord.ErrorMessage}"
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+                                    <Button Command="{Binding RetryDownloadCommand}"
+                                            Classes="primary-btn"
+                                            HorizontalAlignment="Stretch">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <PathIcon Data="{StaticResource IconRefresh}" Width="12" Height="12" VerticalAlignment="Center" />
+                                            <TextBlock Text="Retry Download" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Status: Available for download -->
+                                <Button Command="{Binding DownloadSelectedCommand}"
+                                        Classes="primary-btn"
+                                        HorizontalAlignment="Stretch"
+                                        IsVisible="{Binding SelectedRecord.State, Converter={StaticResource StateConverter}, ConverterParameter=IsAvailable}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconDownload}" Width="14" Height="14" VerticalAlignment="Center" />
+                                        <TextBlock Text="Download Wallpaper" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

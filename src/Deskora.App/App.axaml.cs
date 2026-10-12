@@ -18,6 +18,8 @@ public partial class App : Application
     private IWallpaperService? _wallpaperService;
     private IWallpaperPreferencesService? _wallpaperPreferencesService;
     private IFilePickerService? _filePickerService;
+    private IGalleryProvider? _galleryProvider;
+    private IDownloadService? _downloadService;
 
     public override void Initialize()
     {
@@ -37,6 +39,8 @@ public partial class App : Application
             _wallpaperService = new Services.WindowsWallpaperService();
             _wallpaperPreferencesService = new JsonWallpaperPreferencesService();
             _filePickerService = new Services.AvaloniaFilePickerService();
+            _galleryProvider = new OnlineGalleryProvider(new JsonCatalogProvider());
+            _downloadService = new HttpDownloadService();
 
             // Wire theme changes to Avalonia's RequestedThemeVariant
             _themeService.ThemeChanged += (sender, preference) =>
@@ -56,7 +60,9 @@ public partial class App : Application
                 _errorService,
                 _wallpaperService,
                 _wallpaperPreferencesService,
-                _filePickerService
+                _filePickerService,
+                _galleryProvider,
+                _downloadService
             );
 
             // Construct main ViewModel
@@ -81,7 +87,9 @@ public partial class App : Application
         IErrorService errorService,
         IWallpaperService wallpaperService,
         IWallpaperPreferencesService wallpaperPreferencesService,
-        IFilePickerService filePickerService)
+        IFilePickerService filePickerService,
+        IGalleryProvider galleryProvider,
+        IDownloadService downloadService)
     {
         navigationService.RegisterPage(NavigationPageKey.Home, () => new HomeViewModel(navigationService));
         navigationService.RegisterPage(NavigationPageKey.Wallpapers, () => new WallpapersViewModel(
@@ -90,6 +98,12 @@ public partial class App : Application
             filePickerService,
             errorService
         ));
+        navigationService.RegisterPage(NavigationPageKey.Gallery, () =>
+        {
+            var vm = new GalleryViewModel(galleryProvider, downloadService, errorService, wallpaperService);
+            _ = vm.InitializeAsync();
+            return vm;
+        });
         navigationService.RegisterPage(NavigationPageKey.LiveWallpapers, () => new LiveWallpapersViewModel());
         navigationService.RegisterPage(NavigationPageKey.Icons, () => new IconsViewModel());
         navigationService.RegisterPage(NavigationPageKey.Layouts, () => new LayoutsViewModel());
