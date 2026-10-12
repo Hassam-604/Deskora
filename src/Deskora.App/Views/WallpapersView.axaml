@@ -1,129 +1,477 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+             xmlns:models="clr-namespace:Deskora.Core.Models;assembly=Deskora.Core"
+             xmlns:conv="using:Deskora.App.Converters"
              x:Class="Deskora.App.Views.WallpapersView"
              x:DataType="vm:WallpapersViewModel">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,28,32,36" Spacing="22">
-            <!-- Header -->
-            <StackPanel Spacing="8">
-                <Border Classes="badge-pill" HorizontalAlignment="Left">
-                    <TextBlock Classes="badge-text" Text="Planned for Milestone 0.2.0" />
-                </Border>
+    <UserControl.Resources>
+        <conv:FilePathToBitmapConverter x:Key="ThumbnailConverter" />
+        <conv:WallpaperFitModeConverter x:Key="FitModeConverter" />
+        <conv:BoolToStarBrushConverter x:Key="StarBrushConverter" />
+    </UserControl.Resources>
 
-                <TextBlock Text="Local Wallpaper Studio"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+    <UserControl.Styles>
+        <!-- Transparent button wrapper without gray pointerover flash -->
+        <Style Selector="Button.wallpaper-card-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.wallpaper-card-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
 
-                <TextBlock Text="{Binding Description}"
-                           FontSize="13.5"
+        <!-- Base card styling with smooth transform transition -->
+        <Style Selector="Border.wallpaper-card">
+            <Setter Property="RenderTransform" Value="scale(1) translateY(0px)" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" Easing="CubicEaseOut" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2" />
+                    <BrushTransition Property="Background" Duration="0:0:0.2" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- Selected state for card -->
+        <Style Selector="Border.wallpaper-card.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <!-- Card gentle lift and subtle scale on pointer hover -->
+        <Style Selector="Button.wallpaper-card-btn:pointerover Border.wallpaper-card">
+            <Setter Property="RenderTransform" Value="scale(1.025) translateY(-3px)" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandHoverBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+
+        <!-- Inner thumbnail image zoom transition -->
+        <Style Selector="Image.wallpaper-thumbnail">
+            <Setter Property="RenderTransform" Value="scale(1)" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.28" Easing="CubicEaseOut" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- Inner image smooth zoom effect when hovering the card -->
+        <Style Selector="Button.wallpaper-card-btn:pointerover Image.wallpaper-thumbnail">
+            <Setter Property="RenderTransform" Value="scale(1.07)" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="28,18,28,20">
+        <!-- Top Header & Global Actions Bar -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+            <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,16,0">
+                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock Text="Local Wallpaper Studio"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Border Classes="badge-pill" Background="{DynamicResource AccentBrandMutedBrush}">
+                        <TextBlock Classes="badge-text" Text="Milestone 0.2.0 Active" Foreground="{DynamicResource AccentBrandBrush}" />
+                    </Border>
+                </StackPanel>
+                <TextBlock Text="Browse local collections, inspect resolution &amp; aspect ratios, and configure multi-monitor desktop wallpapers safely."
+                           FontSize="13"
                            Foreground="{DynamicResource TextSecondaryBrush}"
                            TextWrapping="Wrap"
-                           MaxWidth="720" />
+                           MaxWidth="620" />
             </StackPanel>
 
-            <!-- Planned Architecture Specification Card -->
-            <Border Classes="card">
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Planned Architecture &amp; Platform Integration"
-                               FontSize="15"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}" />
+            <!-- Action Buttons -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Button Classes="secondary-btn"
+                        Command="{Binding AddImagesCommand}"
+                        ToolTip.Tip="Add individual image files">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Path Data="{StaticResource IconPlus}" Fill="{DynamicResource TextPrimaryBrush}" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="Add Images" FontSize="12.5" />
+                    </StackPanel>
+                </Button>
 
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,14,10">
-                            <TextBlock Text="• Windows Desktop Wallpaper COM API" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Uses IDesktopWallpaper to configure per-monitor backgrounds safely without corrupting registry keys." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                <Button Classes="secondary-btn"
+                        Command="{Binding SelectFolderCommand}"
+                        ToolTip.Tip="Select a directory to scan for wallpaper images">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Path Data="{StaticResource IconFolderOpen}" Fill="{DynamicResource TextPrimaryBrush}" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="Choose Folder" FontSize="12.5" />
+                    </StackPanel>
+                </Button>
+
+                <Button Classes="secondary-btn"
+                        Command="{Binding RefreshLibraryCommand}"
+                        ToolTip.Tip="Rescan folder and refresh gallery">
+                    <Path Data="{StaticResource IconRefresh}" Fill="{DynamicResource TextPrimaryBrush}" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
+                </Button>
+
+                <!-- 1-Click Restore Button -->
+                <Button Classes="secondary-btn"
+                        Command="{Binding RestoreWallpaperCommand}"
+                        IsEnabled="{Binding CanRestore}"
+                        ToolTip.Tip="{Binding RestoreButtonTooltip}">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Path Data="{StaticResource IconUndo}" Fill="{DynamicResource AccentBrandBrush}" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="Restore Previous" FontSize="12.5" Foreground="{DynamicResource AccentBrandBrush}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Filter & Search Toolbar Strip -->
+        <Border Grid.Row="1" Classes="card" Padding="12,8" Margin="0,0,0,14" ClipToBounds="True">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!-- Filter Tabs -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+                    <Button Classes="nav-button"
+                            Padding="12,6"
+                            Command="{Binding SetFilterTabCommand}"
+                            CommandParameter="All">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="All Wallpapers" FontSize="12.5" FontWeight="SemiBold" />
+                            <Border Classes="badge-pill" Padding="5,1">
+                                <TextBlock Classes="badge-text" Text="{Binding TotalCount}" FontSize="10" />
+                            </Border>
                         </StackPanel>
+                    </Button>
 
-                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="14,0,0,10">
-                            <TextBlock Text="• Local Asset Caching" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="SkiaSharp-based low-memory image thumbnail decoding with disk cache to prevent UI freezing." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                    <Button Classes="nav-button"
+                            Padding="12,6"
+                            Command="{Binding SetFilterTabCommand}"
+                            CommandParameter="Favorites">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Path Data="{StaticResource IconStar}" Fill="#EAB308" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" />
+                            <TextBlock Text="Favorites" FontSize="12.5" />
+                            <Border Classes="badge-pill" Padding="5,1">
+                                <TextBlock Classes="badge-text" Text="{Binding FavoritesCount}" FontSize="10" />
+                            </Border>
                         </StackPanel>
+                    </Button>
 
-                        <StackPanel Grid.Column="0" Grid.Row="1" Spacing="4" Margin="0,10,14,0">
-                            <TextBlock Text="• Multi-Monitor Coordinate Mapping" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Detects display device paths, virtual screen bounding boxes, and resolutions." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                    <Button Classes="nav-button"
+                            Padding="12,6"
+                            Command="{Binding SetFilterTabCommand}"
+                            CommandParameter="Recent">
+                        <TextBlock Text="Recently Applied" FontSize="12.5" />
+                    </Button>
+                </StackPanel>
+
+                <!-- Search Input -->
+                <Grid Grid.Column="2" MinWidth="130" MaxWidth="210" HorizontalAlignment="Right" Margin="10,0,0,0">
+                    <TextBox Text="{Binding SearchQuery, Mode=TwoWay}"
+                             Watermark="Filter by filename..."
+                             FontSize="12"
+                             Padding="10,6"
+                             CornerRadius="6"
+                             HorizontalAlignment="Stretch" />
+                </Grid>
+            </Grid>
+        </Border>
+
+        <!-- Main Workspace (Gallery Grid + Inspector Pane) -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,360">
+            <!-- Left Side: Gallery of Wallpapers -->
+            <Grid Grid.Column="0" Margin="0,0,16,0">
+                <!-- Loading State Overlay -->
+                <Border Classes="card"
+                        IsVisible="{Binding IsLoading}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                        <TextBlock Text="{Binding LoadingStatus}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Reading image headers and caching thumbnails..."
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextMutedBrush}"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Empty State -->
+                <Border Classes="card"
+                        IsVisible="{Binding DisplayedWallpapers.Count, Converter={x:Static ObjectConverters.Equal}, ConverterParameter=0}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="14" MaxWidth="440">
+                        <Border Width="56" Height="56" Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="28" HorizontalAlignment="Center">
+                            <Path Data="{StaticResource IconWallpaper}" Fill="{DynamicResource AccentBrandBrush}" Width="28" Height="28" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="No Wallpapers Found" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" />
+                        <TextBlock Text="No image files match your current filter, or no local folder has been selected yet. Add images or choose a folder to populate your gallery."
+                                   FontSize="12.5"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap"
+                                   TextAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,6,0,0">
+                            <Button Classes="primary-btn" Command="{Binding SelectFolderCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Path Data="{StaticResource IconFolderOpen}" Fill="#FFFFFF" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
+                                    <TextBlock Text="Choose Folder" FontSize="12.5" />
+                                </StackPanel>
+                            </Button>
+                            <Button Classes="secondary-btn" Command="{Binding AddImagesCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Path Data="{StaticResource IconPlus}" Fill="{DynamicResource TextPrimaryBrush}" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" />
+                                    <TextBlock Text="Add Images" FontSize="12.5" />
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
+                    </StackPanel>
+                </Border>
 
-                        <StackPanel Grid.Column="1" Grid.Row="1" Spacing="4" Margin="14,10,0,0">
-                            <TextBlock Text="• Safe Snapshot &amp; Rollback" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Records original wallpaper paths prior to applying changes for 1-click restore." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                <!-- Wallpaper Cards Gallery (ScrollViewer with WrapPanel) -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding DisplayedWallpapers}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="models:WallpaperItem">
+                                <Button Classes="wallpaper-card-btn"
+                                        Command="{Binding $parent[UserControl].((vm:WallpapersViewModel)DataContext).SelectWallpaperCommand}"
+                                        CommandParameter="{Binding}"
+                                        Margin="0,0,12,14">
+                                    <Border Classes="card wallpaper-card"
+                                            Classes.selected="{Binding IsSelected}"
+                                            Width="220"
+                                            Padding="10">
+                                        <StackPanel Spacing="8">
+                                            <!-- Thumbnail Container -->
+                                            <Border Height="128"
+                                                    CornerRadius="8"
+                                                    ClipToBounds="True"
+                                                    Background="#0B0F19">
+                                                <Grid>
+                                                    <Image Classes="wallpaper-thumbnail"
+                                                           Source="{Binding FilePath, Converter={StaticResource ThumbnailConverter}, ConverterParameter=360}"
+                                                           Stretch="UniformToFill"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" />
+
+                                                    <!-- Selected Indicator Badge (Top Left) -->
+                                                    <Border IsVisible="{Binding IsSelected}"
+                                                            Background="{DynamicResource AccentBrandBrush}"
+                                                            CornerRadius="4"
+                                                            Padding="6,2"
+                                                            HorizontalAlignment="Left"
+                                                            VerticalAlignment="Top"
+                                                            Margin="6">
+                                                        <TextBlock Text="Selected" FontSize="9.5" FontWeight="Bold" Foreground="#FFFFFF" />
+                                                    </Border>
+
+                                                    <!-- Favorite Star Icon (Top Right) -->
+                                                    <Button Command="{Binding $parent[UserControl].((vm:WallpapersViewModel)DataContext).ToggleFavoriteCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Top"
+                                                            Margin="6"
+                                                            Padding="6"
+                                                            Background="#90000000"
+                                                            CornerRadius="14"
+                                                            ToolTip.Tip="Toggle favorite">
+                                                        <Path Data="{StaticResource IconStar}"
+                                                              Fill="{Binding IsFavorite, Converter={StaticResource StarBrushConverter}, ConverterParameter=card}"
+                                                              Width="13" Height="13"
+                                                              Stretch="Uniform" />
+                                                    </Button>
+
+                                                    <!-- Invalid File Warning Badge Overlay -->
+                                                    <Border IsVisible="{Binding !IsValid}"
+                                                            Background="#CCB91C1C"
+                                                            Padding="6,4"
+                                                            VerticalAlignment="Bottom">
+                                                        <TextBlock Text="Invalid or Missing File" FontSize="10" Foreground="#FFFFFF" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+
+                                            <!-- Card Metadata -->
+                                            <StackPanel Spacing="3">
+                                                <TextBlock Text="{Binding FileName}"
+                                                           FontWeight="SemiBold"
+                                                           FontSize="12.5"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                                                <TextBlock Text="{Binding ResolutionFormatted}"
+                                                           FontSize="11"
+                                                           Foreground="{DynamicResource TextMutedBrush}" />
+
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding AspectRatio}"
+                                                               FontSize="10.5"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                                                    <TextBlock Grid.Column="1"
+                                                               Text="{Binding FileSizeFormatted}"
+                                                               FontSize="10.5"
+                                                               Foreground="{DynamicResource TextMutedBrush}" />
+                                                </Grid>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Right Side: Inspection & Apply Control Panel -->
+            <Border Grid.Column="1" Classes="card" Padding="16,14">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <!-- Inspector Header with Favorite Quick Toggle -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                        <TextBlock Grid.Column="0"
+                                   Text="Wallpaper Details &amp; Apply"
+                                   FontSize="15"
+                                   FontWeight="Bold"
+                                   VerticalAlignment="Center" />
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                            <Button Classes="secondary-btn"
+                                    Padding="8,4"
+                                    Command="{Binding ToggleFavoriteSelectedCommand}"
+                                    ToolTip.Tip="Toggle favorite for selected wallpaper">
+                                <Path Data="{StaticResource IconStar}"
+                                      Fill="{Binding SelectedWallpaper.IsFavorite, Converter={StaticResource StarBrushConverter}}"
+                                      Width="13" Height="13"
+                                      Stretch="Uniform" />
+                            </Button>
+
+                            <Button Classes="secondary-btn"
+                                    Padding="8,4"
+                                    Command="{Binding RemoveSelectedWallpaperCommand}"
+                                    ToolTip.Tip="Remove wallpaper from Deskora library">
+                                <Path Data="{StaticResource IconTrash}"
+                                      Fill="#EF4444"
+                                      Width="13" Height="13"
+                                      Stretch="Uniform" />
+                            </Button>
                         </StackPanel>
                     </Grid>
-                </StackPanel>
-            </Border>
 
-            <!-- Sample UI Preview Layout -->
-            <StackPanel Spacing="10">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="Interface Design Preview"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="6" Padding="6,2">
-                        <TextBlock Text="Visual Preview Only" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
-                    </Border>
-                </StackPanel>
-
-                <!-- Mockup Grid of Wallpaper Cards -->
-                <Grid ColumnDefinitions="*,*,*">
-                    <!-- Sample Card 1 -->
-                    <Border Grid.Column="0" Classes="card" Margin="0,0,8,0">
-                        <StackPanel Spacing="10">
-                            <Border Height="120" Background="#1E293B" CornerRadius="8">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
-                                    <Path Data="{StaticResource IconWallpaper}" Fill="{DynamicResource TextMutedBrush}" Width="26" Height="26" Stretch="Uniform" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Sample: Nordic Dawn" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
-                                </StackPanel>
+                    <!-- Inspection Details Container (Scrollbar hidden) -->
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Hidden"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Spacing="7">
+                            <!-- Large High-Res Preview (Compact height so all controls fit without scrolling) -->
+                            <Border Height="115"
+                                    CornerRadius="8"
+                                    ClipToBounds="True"
+                                    Background="#0F172A">
+                                <Image Source="{Binding SelectedWallpaper.FilePath, Converter={StaticResource ThumbnailConverter}, ConverterParameter=800}"
+                                       Stretch="UniformToFill"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
                             </Border>
-                            <TextBlock Text="Nordic Dawn 4K" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="3840 × 2160 • Landscape" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
-                        </StackPanel>
-                    </Border>
 
-                    <!-- Sample Card 2 -->
-                    <Border Grid.Column="1" Classes="card" Margin="4,0,4,0">
-                        <StackPanel Spacing="10">
-                            <Border Height="120" Background="#1E293B" CornerRadius="8">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
-                                    <Path Data="{StaticResource IconWallpaper}" Fill="{DynamicResource TextMutedBrush}" Width="26" Height="26" Stretch="Uniform" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Sample: Deep Cosmos" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
-                            <TextBlock Text="Deep Cosmos Ultra" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="5120 × 2880 • Wide" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
-                        </StackPanel>
-                    </Border>
+                            <!-- Wallpaper File Name & Path -->
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="{Binding SelectedWallpaper.FileName}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding SelectedWallpaper.FilePath}"
+                                           FontSize="10"
+                                           Foreground="{DynamicResource TextMutedBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
 
-                    <!-- Sample Card 3 -->
-                    <Border Grid.Column="2" Classes="card" Margin="8,0,0,0">
-                        <StackPanel Spacing="10">
-                            <Border Height="120" Background="#1E293B" CornerRadius="8">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
-                                    <Path Data="{StaticResource IconWallpaper}" Fill="{DynamicResource TextMutedBrush}" Width="26" Height="26" Stretch="Uniform" HorizontalAlignment="Center" />
-                                    <TextBlock Text="Sample: Minimal Gradient" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
-                                </StackPanel>
+                            <!-- Metadata Specification Grid -->
+                            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="8" Padding="10,6">
+                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                                    <StackPanel Grid.Column="0" Grid.Row="0" Margin="0,0,0,4">
+                                        <TextBlock Text="Resolution" FontSize="9.5" Foreground="{DynamicResource TextMutedBrush}" />
+                                        <TextBlock Text="{Binding SelectedWallpaper.ResolutionFormatted}" FontSize="11.5" FontWeight="SemiBold" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,0,4">
+                                        <TextBlock Text="Aspect Ratio" FontSize="9.5" Foreground="{DynamicResource TextMutedBrush}" />
+                                        <TextBlock Text="{Binding SelectedWallpaper.AspectRatio}" FontSize="11.5" FontWeight="SemiBold" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="1">
+                                        <TextBlock Text="File Size" FontSize="9.5" Foreground="{DynamicResource TextMutedBrush}" />
+                                        <TextBlock Text="{Binding SelectedWallpaper.FileSizeFormatted}" FontSize="11.5" FontWeight="SemiBold" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Grid.Row="1">
+                                        <TextBlock Text="Format" FontSize="9.5" Foreground="{DynamicResource TextMutedBrush}" />
+                                        <TextBlock Text="{Binding SelectedWallpaper.Extension}" FontSize="11.5" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Grid>
                             </Border>
-                            <TextBlock Text="Minimal Gradient" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="2560 × 1440 • Duo-tone" FontSize="11" Foreground="{DynamicResource TextMutedBrush}" />
+
+                            <!-- Target Monitor Selection -->
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="Target Display" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <ComboBox ItemsSource="{Binding Monitors}"
+                                          SelectedItem="{Binding SelectedMonitor}"
+                                          HorizontalAlignment="Stretch">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate DataType="models:MonitorInfo">
+                                            <TextBlock Text="{Binding Name}" FontSize="12" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- Wallpaper Fit Mode Selection -->
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="Wallpaper Fit Position" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <ComboBox ItemsSource="{Binding AvailableFitModes}"
+                                          SelectedItem="{Binding SelectedFitMode}"
+                                          HorizontalAlignment="Stretch">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate DataType="models:WallpaperFitMode">
+                                            <TextBlock Text="{Binding Converter={StaticResource FitModeConverter}}" FontSize="12" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
                         </StackPanel>
-                    </Border>
+                    </ScrollViewer>
+
+                    <!-- Bottom Action Controls -->
+                    <StackPanel Grid.Row="2" Spacing="8" Margin="0,10,0,0">
+                        <Button Classes="primary-btn"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Command="{Binding ApplyWallpaperCommand}"
+                                IsEnabled="{Binding !IsApplying}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Data="{StaticResource IconCheck}" Fill="#FFFFFF" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center" />
+                                <TextBlock Text="Apply Desktop Wallpaper" FontSize="13" />
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Safe Rollback Info Text -->
+                        <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="6" Padding="8,6">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Path Grid.Column="0" Data="{StaticResource IconInfo}" Fill="{DynamicResource AccentBrandBrush}" Width="13" Height="13" Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Grid.Column="1"
+                                           Text="Safe rollback active: Deskora automatically snapshots your wallpaper before changes."
+                                           FontSize="10"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
                 </Grid>
-            </StackPanel>
-
-            <!-- Safety Banner -->
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="14">
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Path Data="{StaticResource IconInfo}" Fill="{DynamicResource AccentBrandBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center" />
-                    <TextBlock Text="System protection note: Deskora 0.1.0 does not perform wallpaper modifications. All wallpaper APIs will be implemented and tested in Milestone 0.2.0."
-                               FontSize="12"
-                               Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" />
-                </StackPanel>
             </Border>
-        </StackPanel>
-    </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>

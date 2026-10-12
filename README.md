@@ -16,25 +16,24 @@ Deskora is an open desktop personalization studio designed to unify desktop cust
 
 ---
 
-## Current Status: Milestone 0.1.0 — Foundation and App Shell
+## Current Status: Milestone 0.2.0 — Local Wallpapers
 
-Milestone `0.1.0` establishes the foundational desktop application shell and navigation system.
+Milestone `0.2.0` introduces Deskora's first live desktop personalization feature: browsing local image collections, inspecting high-resolution metadata, selecting monitor layouts, and safely applying static wallpapers on Windows with automated 1-click snapshot restoration.
 
-### Features in 0.1.0
+### Features in 0.2.0
+- **Local Wallpaper Studio:**
+  - **Gallery & Folder Scanning:** Scan any local folder or pick individual images (PNG, JPG, BMP, WebP) with background processing.
+  - **Zero-Allocation Image Header Decoding:** `ImageHeaderReader` inspects dimensions and aspect ratios instantly without loading multi-megabyte pixel buffers into memory.
+  - **High-Performance Thumbnail Caching:** Fluid 60fps scrolling backed by memory-cached downscaled thumbnails.
+  - **Multi-Monitor Configuration:** Detects connected displays via Windows `IDesktopWallpaper` COM API; configure wallpapers per display or across all monitors.
+  - **Wallpaper Fit Positions:** Full support for Windows fit options: Fill, Fit, Stretch, Center, Tile, and Span.
+  - **1-Click Safe Rollback:** Automatically captures desktop wallpaper snapshots before any modifications, enabling instant restore.
+  - **Favorites & Recent History:** Favorite wallpapers and track recently applied images across sessions via local JSON preferences.
 - **Polished Desktop Shell:** Fixed, predictable layout featuring modern sidebar navigation, version branding, and dynamic status footer.
-- **Dynamic Navigation:** Complete page switching across 9 modules:
-  - **Home Dashboard:** Welcome hero banner, system safety status metrics, planned feature module cards, and presets empty state.
-  - **Local Wallpapers (Planned 0.2.0):** Architectural specification and non-functional visual preview.
-  - **Live Wallpapers (Planned 0.6.0):** Windows WorkerW hook architecture specification and isolation notes.
-  - **Desktop Icons (Planned 0.4.0):** IShellLink and icon cache refresh specification.
-  - **Desktop Layouts (Planned 0.5.0):** SysListView32 icon coordinate snapshot specification.
-  - **Themes (Planned 0.8.0):** Windows DWM accent synchronization specification.
-  - **Widgets (Planned 0.7.0):** Low-overhead widget constraints and architecture.
-  - **Settings:** **Active and functional** live theme switcher (System Default, Light Mode, Dark Mode) and error alert test controls.
-  - **About:** Product identity, architectural principles, technology stack, and licensing status.
+- **Dynamic Navigation:** Complete page switching across 9 modules (Home, Wallpapers, Live Wallpapers, Icons, Layouts, Themes, Widgets, Settings, About).
 - **Live Theme Engine:** Real-time theme switching between System Default, Dark Mode, and Light Mode via Avalonia `RequestedThemeVariant`.
 - **Alert & Error System:** Top notification banner supporting Info, Warning, and Error alerts with user dismissal.
-- **Automated Test Suite:** Comprehensive unit test suite covering navigation, theme switching, error notifications, and ViewModels.
+- **Automated Test Suite:** 33 unit tests covering navigation, theme switching, error notifications, fast image header parsing, wallpaper ViewModel workflows, and preference serialization.
 
 ---
 

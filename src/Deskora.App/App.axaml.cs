@@ -15,6 +15,9 @@ public partial class App : Application
     private IThemeService? _themeService;
     private IErrorService? _errorService;
     private INavigationService? _navigationService;
+    private IWallpaperService? _wallpaperService;
+    private IWallpaperPreferencesService? _wallpaperPreferencesService;
+    private IFilePickerService? _filePickerService;
 
     public override void Initialize()
     {
@@ -30,6 +33,11 @@ public partial class App : Application
             _errorService = new ErrorService();
             _navigationService = new NavigationService();
 
+            // Initialize Wallpaper & Storage services
+            _wallpaperService = new Services.WindowsWallpaperService();
+            _wallpaperPreferencesService = new JsonWallpaperPreferencesService();
+            _filePickerService = new Services.AvaloniaFilePickerService();
+
             // Wire theme changes to Avalonia's RequestedThemeVariant
             _themeService.ThemeChanged += (sender, preference) =>
             {
@@ -42,7 +50,14 @@ public partial class App : Application
             };
 
             // Register navigation pages
-            RegisterNavigationPages(_navigationService, _themeService, _errorService);
+            RegisterNavigationPages(
+                _navigationService,
+                _themeService,
+                _errorService,
+                _wallpaperService,
+                _wallpaperPreferencesService,
+                _filePickerService
+            );
 
             // Construct main ViewModel
             var mainViewModel = new MainWindowViewModel(
@@ -63,10 +78,18 @@ public partial class App : Application
     private static void RegisterNavigationPages(
         INavigationService navigationService,
         IThemeService themeService,
-        IErrorService errorService)
+        IErrorService errorService,
+        IWallpaperService wallpaperService,
+        IWallpaperPreferencesService wallpaperPreferencesService,
+        IFilePickerService filePickerService)
     {
         navigationService.RegisterPage(NavigationPageKey.Home, () => new HomeViewModel(navigationService));
-        navigationService.RegisterPage(NavigationPageKey.Wallpapers, () => new WallpapersViewModel());
+        navigationService.RegisterPage(NavigationPageKey.Wallpapers, () => new WallpapersViewModel(
+            wallpaperService,
+            wallpaperPreferencesService,
+            filePickerService,
+            errorService
+        ));
         navigationService.RegisterPage(NavigationPageKey.LiveWallpapers, () => new LiveWallpapersViewModel());
         navigationService.RegisterPage(NavigationPageKey.Icons, () => new IconsViewModel());
         navigationService.RegisterPage(NavigationPageKey.Layouts, () => new LayoutsViewModel());

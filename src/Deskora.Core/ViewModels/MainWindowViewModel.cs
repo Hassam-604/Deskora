@@ -28,7 +28,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public ObservableCollection<NavigationItem> SecondaryNavItems { get; } = new();
 
     public string AppTitle => "Deskora Studio";
-    public string AppVersion => "0.1.0-alpha";
+    public string AppVersion => "0.2.0";
 
     public MainWindowViewModel(
         INavigationService navigationService,
@@ -56,7 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private void InitializeNavigationItems()
     {
         PrimaryNavItems.Add(new NavigationItem(NavigationPageKey.Home, "Home", "IconHome"));
-        PrimaryNavItems.Add(new NavigationItem(NavigationPageKey.Wallpapers, "Wallpapers", "IconWallpaper", "0.2.0"));
+        PrimaryNavItems.Add(new NavigationItem(NavigationPageKey.Wallpapers, "Wallpapers", "IconWallpaper"));
         PrimaryNavItems.Add(new NavigationItem(NavigationPageKey.LiveWallpapers, "Live Wallpapers", "IconVideo", "0.6.0"));
         PrimaryNavItems.Add(new NavigationItem(NavigationPageKey.Icons, "Icons", "IconGrid", "0.4.0"));
         PrimaryNavItems.Add(new NavigationItem(NavigationPageKey.Layouts, "Layouts", "IconLayout", "0.5.0"));

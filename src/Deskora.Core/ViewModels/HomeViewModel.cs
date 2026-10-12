@@ -25,7 +25,7 @@ public partial class HomeViewModel : ViewModelBase
             "Local Wallpapers",
             "Browse, manage, and set high-resolution wallpapers from local folders across multiple displays.",
             "0.2.0",
-            FeatureStatus.Planned,
+            FeatureStatus.Active,
             NavigationPageKey.Wallpapers,
             "IconWallpaper"
         ));

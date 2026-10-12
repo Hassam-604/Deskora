@@ -9,7 +9,7 @@ This document outlines the sequential release milestones for **Deskora**. Develo
 | Version | Milestone Objective | Status | Focus |
 |---|---|---|---|
 | **0.1.0** | **Foundation and App Shell** | **Completed** | Solution architecture, navigation shell, design system, theme engine, tests |
-| **0.2.0** | **Local Wallpapers** | Planned | Local folder browsing, multi-monitor configuration, aspect ratio fit, undo/restore |
+| **0.2.0** | **Local Wallpapers** | **Completed** | Local folder browsing, multi-monitor configuration, aspect ratio fit, undo/restore |
 | **0.3.0** | **Curated Downloadable Gallery** | Planned | Approved asset catalog, previews, licensing metadata, download manager, offline storage |
 | **0.4.0** | **Icon Customization** | Planned | Desktop shortcut icons, Windows shell cache refresh, backup points, safe reset |
 | **0.5.0** | **Desktop Layouts and Presets** | Planned | SysListView32 icon coordinate capture, multi-monitor resolution restoration, named profiles |
@@ -23,7 +23,7 @@ This document outlines the sequential release milestones for **Deskora**. Develo
 
 ## Milestone Details
 
-### 0.1.0 — Foundation and App Shell (Current)
+### 0.1.0 — Foundation and App Shell
 - Establish solution structure (`Deskora.Core`, `Deskora.App`, `Deskora.Tests`).
 - Implement navigation shell with responsive resizing.
 - Create 9 modules (Home, Wallpapers, Live Wallpapers, Icons, Layouts, Themes, Widgets, Settings, About).
@@ -31,12 +31,14 @@ This document outlines the sequential release milestones for **Deskora**. Develo
 - Build error handling and notification banner.
 - Author foundational unit tests and documentation.
 
-### 0.2.0 — Local Wallpapers
-- Implement `IWallpaperService` with Windows `IDesktopWallpaper` COM API.
-- Support local image indexing (PNG, JPG, WebP, BMP).
-- Multi-monitor support: detect display topologies and assign wallpapers per monitor.
-- Implement capture of original wallpaper state for guaranteed 1-click restoration.
-- Implement responsive thumbnail caching without UI blocking.
+### 0.2.0 — Local Wallpapers (Current)
+- Implement `IWallpaperService` with Windows `IDesktopWallpaper` COM API and `SystemParametersInfo` fallback.
+- Support local image indexing and fast zero-allocation header decoding (PNG, JPG, WebP, BMP).
+- Multi-monitor support: detect display topologies, resolutions, and assign wallpapers per monitor or across all displays.
+- Implement capture of original desktop wallpaper state prior to changes for safe 1-click restoration/undo.
+- Implement responsive thumbnail caching without UI blocking using Avalonia `Bitmap.DecodeToWidth`.
+- Implement user-controlled folder scanning, multi-image picking, favorites tracking, and local JSON preferences persistence.
+- Author comprehensive unit tests covering ViewModel, header decoders, and persistence (33 automated tests passing).
 
 ### 0.3.0 — Curated Downloadable Gallery
 - Curated asset catalog using approved, verified open licenses.

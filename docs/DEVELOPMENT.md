@@ -88,9 +88,36 @@ dotnet run --project src/Deskora.App
 5. **Write Unit Tests:**
    Add unit tests in `tests/Deskora.Tests` verifying navigation and ViewModel behavior.
 
+## 5. Desktop Personalization & Wallpaper Architecture (0.2.0)
+
+Deskora isolates platform-specific desktop modifications behind strict abstractions:
+
+```
+┌────────────────────────────────────────────────────────┐
+│            Deskora.Core.Services.IWallpaperService      │
+│  • GetMonitorsAsync()                                  │
+│  • CaptureCurrentSnapshotAsync()                       │
+│  • ApplyWallpaperAsync(path, fitMode, monitorId)       │
+│  • RestoreWallpaperAsync(snapshot)                     │
+└───────────────────────────▲────────────────────────────┘
+                            │ Implemented by
+┌───────────────────────────┴────────────────────────────┐
+│         Deskora.App.Services.WindowsWallpaperService    │
+│  • Windows IDesktopWallpaper COM API                   │
+│  • SystemParametersInfo Fallback                       │
+│  • Registry synchronization (HKCU\Control Panel\Desktop)│
+└────────────────────────────────────────────────────────┘
+```
+
+### Safety and Rollback Rules:
+1. **Always Snapshot First:** Never apply a desktop change without first recording a `WallpaperSnapshot`.
+2. **Graceful Fallback:** If the Windows `IDesktopWallpaper` COM object is unavailable or errors, gracefully fall back to Win32 `SystemParametersInfo`.
+3. **Off-Thread Processing:** All file indexing and image header decodes must execute asynchronously on background threads via `ImageHeaderReader` without blocking the Avalonia UI dispatcher.
+4. **Thumbnail Caching:** Thumbnails are decoded to a maximum width of 400px using `Bitmap.DecodeToWidth` and cached in memory to ensure fluid 60fps scrolling.
+
 ---
 
-## 5. Security & Safety Guidelines
+## 6. Security & Safety Guidelines
 
 - **Never commit secrets:** No API keys, credentials, machine-specific paths, or tokens.
 - **Inspect `.gitignore`:** Ensure temporary files, logs, and build artifacts (`bin/`, `obj/`) remain untracked.
