@@ -16,12 +16,19 @@ Deskora is an open desktop personalization studio designed to unify desktop cust
 
 ---
 
-## Current Status: Milestone 0.2.0 — Local Wallpapers
+## Current Status: Milestone 0.3.0 — Curated Downloadable Gallery
 
-Milestone `0.2.0` introduces Deskora's first live desktop personalization feature: browsing local image collections, inspecting high-resolution metadata, selecting monitor layouts, and safely applying static wallpapers on Windows with automated 1-click snapshot restoration.
+Milestone `0.3.0` expands Deskora with an online-connected, offline-resilient wallpaper gallery featuring thousands of vetted 4K desktop wallpapers, a multi-source provider architecture, safe sandboxed downloads, and 1-click desktop customization.
 
-### Features in 0.2.0
-- **Local Wallpaper Studio:**
+### Features in 0.3.0
+- **Curated Downloadable Gallery:**
+  - **Multi-Source Online Providers:** Simultaneously searches Wallhaven 4K (filtered for 16:9 & 16:10 desktop ratios in 1080p, 1440p, and 4K UHD) and the Nekos.best Art Archive with complete artist and source attribution.
+  - **Offline-First Resilience:** Gracefully falls back to a bundled, approved local JSON catalog (`catalog.json`) when internet connectivity is unavailable.
+  - **Safe Sandboxed Download Manager:** Enforces strict HTTPS URLs, allowed image formats (`.jpg`, `.jpeg`, `.png`, `.webp`, `.bmp`), and a 50 MB safety size quota. Downloads stream atomically to temporary files with cancellation, error cleanup, and optional SHA-256 integrity verification.
+  - **Interactive Search & Filtering:** Instant in-memory filtering combined with 400ms debounced online keyword querying. Category pills for All, Nature, Space, Abstract, Architecture, Minimal, and Anime.
+  - **Asset Detail Inspector & 1-Click Application:** Detailed side drawer showing resolution, aspect ratio, author, license, and storage statistics with 1-click application directly to your desktop.
+  - **Thread-Safe MVVM Architecture:** Synchronized UI thread dispatching eliminates cross-thread collection mutation issues during rapid typing.
+- **Local Wallpaper Studio (0.2.0):**
   - **Gallery & Folder Scanning:** Scan any local folder or pick individual images (PNG, JPG, BMP, WebP) with background processing.
   - **Zero-Allocation Image Header Decoding:** `ImageHeaderReader` inspects dimensions and aspect ratios instantly without loading multi-megabyte pixel buffers into memory.
   - **High-Performance Thumbnail Caching:** Fluid 60fps scrolling backed by memory-cached downscaled thumbnails.
@@ -33,7 +40,7 @@ Milestone `0.2.0` introduces Deskora's first live desktop personalization featur
 - **Dynamic Navigation:** Complete page switching across 9 modules (Home, Wallpapers, Live Wallpapers, Icons, Layouts, Themes, Widgets, Settings, About).
 - **Live Theme Engine:** Real-time theme switching between System Default, Dark Mode, and Light Mode via Avalonia `RequestedThemeVariant`.
 - **Alert & Error System:** Top notification banner supporting Info, Warning, and Error alerts with user dismissal.
-- **Automated Test Suite:** 33 unit tests covering navigation, theme switching, error notifications, fast image header parsing, wallpaper ViewModel workflows, and preference serialization.
+- **Automated Test Suite:** 57 automated unit tests covering navigation, theme switching, error notifications, fast image header parsing, local wallpaper workflows, multi-source catalog parsing, download integrity verification, and ViewModel orchestration.
 
 ---
 
