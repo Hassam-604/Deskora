@@ -6,9 +6,11 @@ public class MockFilePickerService : IFilePickerService
 {
     public List<string> FilesToReturn { get; } = new();
     public string? FolderToReturn { get; set; }
+    public string? IconToReturn { get; set; }
 
     public int PickFilesCallCount { get; private set; }
     public int PickFolderCallCount { get; private set; }
+    public int PickIconCallCount { get; private set; }
 
     public Task<IReadOnlyList<string>> PickImageFilesAsync()
     {
@@ -20,5 +22,11 @@ public class MockFilePickerService : IFilePickerService
     {
         PickFolderCallCount++;
         return Task.FromResult(FolderToReturn);
+    }
+
+    public Task<string?> PickIconFileAsync()
+    {
+        PickIconCallCount++;
+        return Task.FromResult(IconToReturn);
     }
 }

@@ -1,68 +1,810 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:Deskora.Core.ViewModels;assembly=Deskora.Core"
+             xmlns:m="clr-namespace:Deskora.Core.Models;assembly=Deskora.Core"
              x:Class="Deskora.App.Views.IconsView"
              x:DataType="vm:IconsViewModel">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="32,28,32,36" Spacing="22">
-            <StackPanel Spacing="8">
-                <Border Classes="badge-pill" HorizontalAlignment="Left">
-                    <TextBlock Classes="badge-text" Text="Planned for Milestone 0.4.0" />
-                </Border>
+    <UserControl.Styles>
+        <!-- Icon card selection style -->
+        <Style Selector="Border.icon-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14,12" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+                    <BrushTransition Property="Background" Duration="0:0:0.15" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.icon-card:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        </Style>
+        <Style Selector="Border.icon-card.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrandMutedBrush}" />
+            <Setter Property="BorderThickness" Value="1.5" />
+        </Style>
 
-                <TextBlock Text="Desktop Icon Customization"
-                           FontSize="24"
-                           FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
+        <!-- Library item cards -->
+        <Style Selector="Border.library-card">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.12" />
+                    <BrushTransition Property="Background" Duration="0:0:0.12" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.library-card:pointerover">
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrandMutedBrush}" />
+        </Style>
 
-                <TextBlock Text="{Binding Description}"
-                           FontSize="13.5"
-                           Foreground="{DynamicResource TextSecondaryBrush}"
-                           TextWrapping="Wrap"
-                           MaxWidth="720" />
-            </StackPanel>
+        <!-- Source Tab Buttons (Segmented Control) -->
+        <Style Selector="Button.source-tab">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.source-tab:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+        <Style Selector="Button.source-tab.selected">
+            <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+        </Style>
+        <Style Selector="Button.source-tab.selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceCardBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+        </Style>
 
-            <Border Classes="card">
-                <StackPanel Spacing="14">
-                    <TextBlock Text="Planned Capabilities &amp; Windows Shell Safety"
-                               FontSize="15"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}" />
+        <!-- Category Chip Button -->
+        <Style Selector="Button.category-chip">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="12,5" />
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderSubtleBrush}" />
+        </Style>
+        <Style Selector="Button.category-chip:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandMutedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+        </Style>
+        <Style Selector="Button.category-chip.selected">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.category-chip.selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+        </Style>
+        <Style Selector="Button.category-chip.selected:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource AccentBrandBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrandBrush}" />
+        </Style>
 
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-                        <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" Margin="0,0,14,10">
-                            <TextBlock Text="• Shortcut (.lnk) Target Icon Management" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Safely updates shortcut metadata via IShellLinkW COM interface without touching protected system binaries." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                        </StackPanel>
+        <!-- Search button inside textbox -->
+        <Style Selector="Button.search-clear-btn">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Height" Value="28" />
+        </Style>
+        <Style Selector="Button.search-clear-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+    </UserControl.Styles>
 
-                        <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="14,0,0,10">
-                            <TextBlock Text="• Windows Icon Cache Refresh" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Issues SHChangeNotify(SHCNE_ASSOCCHANGED) to cleanly instruct Explorer to redraw without forcing explorer.exe crashes." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="0" Grid.Row="1" Spacing="4" Margin="0,10,14,0">
-                            <TextBlock Text="• Curated Icon Pack Format" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="Support for high-DPI multi-size .ico assets (16x16 to 256x256) with embedded attribution manifests." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1" Grid.Row="1" Spacing="4" Margin="14,10,0,0">
-                            <TextBlock Text="• Complete Default Restoration" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-                            <TextBlock Text="One-click reset back to factory default Windows desktop shortcut icons." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </StackPanel>
-            </Border>
-
-            <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="10" Padding="14">
-                <StackPanel Orientation="Horizontal" Spacing="10">
-                    <Path Data="{StaticResource IconInfo}" Fill="{DynamicResource AccentBrandBrush}" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center" />
-                    <TextBlock Text="Deskora 0.1.0 does not modify shortcuts or the icon cache. Implementation begins in Milestone 0.4.0."
-                               FontSize="12"
+    <Panel>
+        <!-- Main Icon Studio Layout -->
+        <Grid RowDefinitions="Auto,*" Margin="28,20,28,24">
+            <!-- Row 0: Header & Shell Controls -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,18">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock Text="Desktop Icon Studio"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                        <Border Classes="badge-pill" Background="{DynamicResource AccentBrandMutedBrush}" VerticalAlignment="Center">
+                            <TextBlock Classes="badge-text" Text="Reversible Shell Link Mode" Foreground="{DynamicResource AccentBrandBrush}" />
+                        </Border>
+                        <Border Classes="badge-pill" Background="{DynamicResource SurfaceCardBrush}" VerticalAlignment="Center"
+                                IsVisible="{Binding ModifiedCount}">
+                            <TextBlock Classes="badge-text" Text="{Binding ModifiedCount, StringFormat='{}{0} Customized'}" Foreground="{DynamicResource AccentBrandBrush}" />
+                        </Border>
+                    </StackPanel>
+                    <TextBlock Text="Safely customize desktop shortcut icons and folder glyphs with automatic baseline snapshots and 1-click rollback."
+                               FontSize="13"
                                Foreground="{DynamicResource TextSecondaryBrush}"
-                               VerticalAlignment="Center" />
+                               TextWrapping="Wrap"
+                               MaxWidth="700" />
                 </StackPanel>
+
+                <!-- Global Action Buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <Button Command="{Binding ScanDesktopCommand}"
+                            Classes="secondary-btn"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="Rescan desktop shortcuts and folders">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconRefresh}" Width="13" Height="13" VerticalAlignment="Center" />
+                            <TextBlock Text="Scan Desktop" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Command="{Binding RefreshShellCacheCommand}"
+                            Classes="secondary-btn"
+                            VerticalAlignment="Center"
+                            ToolTip.Tip="Notify Windows Explorer to redraw icons without restarting explorer.exe">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconIcons}" Width="13" Height="13" VerticalAlignment="Center" />
+                            <TextBlock Text="Refresh Explorer" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Command="{Binding ResetAllToDefaultsCommand}"
+                            Classes="secondary-btn"
+                            VerticalAlignment="Center"
+                            IsEnabled="{Binding ModifiedCount}"
+                            ToolTip.Tip="Restore all customized desktop icons back to their original Windows defaults">
+                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconUndo}" Width="13" Height="13" VerticalAlignment="Center" />
+                            <TextBlock Text="Reset All" FontSize="12" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Row 1: Workspace Split (Left: Desktop Items Grid; Right: Customization Drawer) -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,350">
+                <!-- Left Column: Search & Items Grid -->
+                <Grid Grid.Column="0" RowDefinitions="Auto,*" Margin="0,0,16,0">
+                    <!-- Search Box -->
+                    <Border Grid.Row="0" Margin="0,0,0,12">
+                        <TextBox Text="{Binding SearchQuery, Mode=TwoWay}"
+                                 Watermark="Search desktop shortcuts and folders by name or path..."
+                                 Height="40"
+                                 VerticalContentAlignment="Center"
+                                 CornerRadius="8"
+                                 Padding="12,0"
+                                 BorderBrush="{DynamicResource BorderSubtleBrush}">
+                            <TextBox.InnerLeftContent>
+                                <PathIcon Data="{StaticResource IconSearch}"
+                                          Width="15"
+                                          Height="15"
+                                          Margin="10,0,8,0"
+                                          VerticalAlignment="Center"
+                                          Foreground="{DynamicResource TextMutedBrush}" />
+                            </TextBox.InnerLeftContent>
+                            <TextBox.InnerRightContent>
+                                <Button Command="{Binding ClearSearchCommand}"
+                                        Classes="search-clear-btn"
+                                        Margin="0,0,6,0"
+                                        ToolTip.Tip="Clear search input"
+                                        IsVisible="{Binding SearchQuery, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconClose}" Width="10" Height="10" VerticalAlignment="Center" />
+                                        <TextBlock Text="Clear" FontSize="11" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </TextBox.InnerRightContent>
+                        </TextBox>
+                    </Border>
+
+                    <!-- Items ScrollViewer -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="10">
+                            <!-- Loading Indicator -->
+                            <ProgressBar IsIndeterminate="True"
+                                         IsVisible="{Binding IsLoading}"
+                                         Height="3"
+                                         Margin="0,0,0,8" />
+
+                            <!-- Items List -->
+                            <ItemsControl ItemsSource="{Binding DisplayedIcons}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="m:DesktopIconItem">
+                                        <Border Classes="icon-card"
+                                                Classes.selected="{Binding IsSelected}"
+                                                Width="195"
+                                                Margin="0,0,12,12">
+                                            <Button Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Command="{Binding $parent[ItemsControl].((vm:IconsViewModel)DataContext).SelectIconCommand}"
+                                                    CommandParameter="{Binding .}">
+                                                <StackPanel Spacing="8">
+                                                    <Grid ColumnDefinitions="*,Auto">
+                                                        <Border Width="38" Height="38"
+                                                                CornerRadius="8"
+                                                                Background="{DynamicResource SurfaceHoverBrush}"
+                                                                HorizontalAlignment="Left"
+                                                                ClipToBounds="True">
+                                                            <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <Image Source="{Binding ThumbnailBitmap}"
+                                                                       Width="32" Height="32"
+                                                                       IsVisible="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                                <PathIcon Data="{StaticResource IconIcons}"
+                                                                          Width="18" Height="18"
+                                                                          Foreground="{DynamicResource AccentBrandBrush}"
+                                                                          IsVisible="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNull}}" />
+                                                            </Panel>
+                                                        </Border>
+                                                        <Border Grid.Column="1"
+                                                                Classes="badge-pill"
+                                                                Background="{DynamicResource AccentBrandMutedBrush}"
+                                                                IsVisible="{Binding IsModified}"
+                                                                VerticalAlignment="Top">
+                                                            <TextBlock Text="Custom" FontSize="10" FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource AccentBrandBrush}" />
+                                                        </Border>
+                                                    </Grid>
+
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="13"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               MaxLines="1" />
+
+                                                    <TextBlock Text="{Binding TypeLabel}"
+                                                               FontSize="11"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                </StackPanel>
+                                            </Button>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Empty State -->
+                            <Border IsVisible="{Binding !DisplayedIcons.Count}"
+                                    Background="{DynamicResource SurfaceCardBrush}"
+                                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="36"
+                                    Margin="0,20,0,0"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Spacing="12" HorizontalAlignment="Center">
+                                    <PathIcon Data="{StaticResource IconIcons}"
+                                              Width="36" Height="36"
+                                              HorizontalAlignment="Center"
+                                              Foreground="{DynamicResource TextMutedBrush}" />
+                                    <TextBlock Text="No desktop shortcuts or folders found"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    <TextBlock Text="Click 'Scan Desktop' to discover customizable items on your desktop."
+                                               FontSize="12.5"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- Right Column: Customization Drawer -->
+                <Border Grid.Column="1"
+                        Background="{DynamicResource SurfaceCardBrush}"
+                        BorderBrush="{DynamicResource BorderSubtleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="20">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="18">
+                            <!-- Drawer Title -->
+                            <TextBlock Text="Icon Customizer"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                            <!-- Selected Item Overview -->
+                            <StackPanel Spacing="8" IsVisible="{Binding SelectedIcon, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <TextBlock Text="TARGET ITEM" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" LetterSpacing="0.8" />
+                                <Border Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="8" Padding="12">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Border Width="40" Height="40"
+                                                CornerRadius="8"
+                                                Background="{DynamicResource SurfaceCardBrush}"
+                                                Margin="0,0,12,0"
+                                                ClipToBounds="True"
+                                                VerticalAlignment="Top">
+                                            <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Image Source="{Binding SelectedIcon.ThumbnailBitmap}"
+                                                       Width="32" Height="32"
+                                                       IsVisible="{Binding SelectedIcon.ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                <PathIcon Data="{StaticResource IconIcons}"
+                                                          Width="18" Height="18"
+                                                          Foreground="{DynamicResource AccentBrandBrush}"
+                                                          IsVisible="{Binding SelectedIcon.ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNull}}" />
+                                            </Panel>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" Spacing="4">
+                                            <TextBlock Text="{Binding SelectedIcon.Name}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                            <TextBlock Text="{Binding SelectedIcon.FilePath}"
+                                                       FontSize="11"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                                       TextWrapping="Wrap" />
+                                            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+                                                <Border Classes="badge-pill" Background="{DynamicResource SurfaceCardBrush}">
+                                                    <TextBlock Classes="badge-text"
+                                                               Text="{Binding SelectedIcon.TypeLabel}" />
+                                                </Border>
+                                                <Border Classes="badge-pill" Background="{DynamicResource AccentBrandMutedBrush}"
+                                                        IsVisible="{Binding SelectedIcon.IsModified}">
+                                                    <TextBlock Classes="badge-text" Text="Modified via Deskora" Foreground="{DynamicResource AccentBrandBrush}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Icon Picker & Validation -->
+                            <StackPanel Spacing="10" IsVisible="{Binding SelectedIcon, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <TextBlock Text="CUSTOM ICON SOURCE" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource TextMutedBrush}" LetterSpacing="0.8" />
+
+                                <!-- Primary Button: Open Built-in Library (1,000+ Icons) -->
+                                <Button Command="{Binding OpenLibraryCommand}"
+                                        Classes="primary-btn"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconIcons}" Width="14" Height="14" VerticalAlignment="Center" />
+                                        <TextBlock Text="Browse Icon Library..." FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Secondary Button: Local File Pick -->
+                                <Button Command="{Binding PickCustomIconCommand}"
+                                        Classes="secondary-btn"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconFolder}" Width="13" Height="13" VerticalAlignment="Center" />
+                                        <TextBlock Text="Browse Local File (.ico, .exe)..." FontSize="11.5" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Path & Validation Message Box -->
+                                <Border Background="{DynamicResource SurfaceHoverBrush}"
+                                        CornerRadius="8"
+                                        Padding="12"
+                                        IsVisible="{Binding SelectedCustomIconPath, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*"
+                                              Margin="0,0,0,6"
+                                              IsVisible="{Binding CustomIconPreviewBitmap, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                            <Border Width="36" Height="36"
+                                                    CornerRadius="6"
+                                                    Background="{DynamicResource SurfaceCardBrush}"
+                                                    Margin="0,0,10,0"
+                                                    ClipToBounds="True">
+                                                <Image Source="{Binding CustomIconPreviewBitmap}"
+                                                       Width="28" Height="28"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="Custom Icon Preview"
+                                                           FontSize="11"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                <TextBlock Text="Ready to apply to target item"
+                                                           FontSize="10"
+                                                           Foreground="{DynamicResource TextSecondaryBrush}" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{Binding SelectedCustomIconPath}"
+                                                   FontSize="11"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding CustomIconValidationMessage}"
+                                                   FontSize="11.5"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource AccentBrandBrush}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Action Buttons -->
+                            <StackPanel Spacing="10" IsVisible="{Binding SelectedIcon, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                <Button Command="{Binding ApplyCustomIconCommand}"
+                                        Classes="primary-btn"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        IsEnabled="{Binding IsCustomIconValid}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconCheck}" Width="13" Height="13" VerticalAlignment="Center" />
+                                        <TextBlock Text="Apply Custom Icon" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Command="{Binding RestoreSelectedCommand}"
+                                        Classes="secondary-btn"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        IsEnabled="{Binding SelectedIcon.IsModified}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconUndo}" Width="13" Height="13" VerticalAlignment="Center" />
+                                        <TextBlock Text="Restore Original Icon" FontSize="12" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- No Selection Prompt -->
+                            <Border IsVisible="{Binding SelectedIcon, Converter={x:Static ObjectConverters.IsNull}}"
+                                    Padding="20"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="Select a desktop shortcut or folder from the list to preview and customize its icon."
+                                           FontSize="12.5"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap" />
+                            </Border>
+
+                            <Separator Background="{DynamicResource BorderSubtleBrush}" Height="1" />
+
+                            <!-- Safety Guarantee Information Box -->
+                            <Border Background="{DynamicResource SurfaceHoverBrush}"
+                                    CornerRadius="8"
+                                    Padding="12">
+                                <StackPanel Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <PathIcon Data="{StaticResource IconInfo}" Width="12" Height="12" Foreground="{DynamicResource AccentBrandBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="Safety Guarantee" FontSize="11.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                    <TextBlock Text="Deskora customizes only desktop shortcut metadata and folder desktop.ini descriptors. Target application binaries (.exe) and protected system files are never modified."
+                                               FontSize="11"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Icon Library Modal Dialog Overlay -->
+        <Grid Background="#A0000000" IsVisible="{Binding IsLibraryOpen}">
+            <Border Background="{DynamicResource SurfaceCardBrush}"
+                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="14"
+                    Width="800"
+                    Height="560"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Padding="22">
+                <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+                    <!-- Modal Header -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <TextBlock Text="Deskora Icon Library"
+                                       FontSize="17"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="Click any icon to preview and customize your selected desktop shortcut or folder."
+                                       FontSize="11.5"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Command="{Binding CloseLibraryCommand}"
+                                Classes="secondary-btn"
+                                Padding="8,6"
+                                VerticalAlignment="Top"
+                                ToolTip.Tip="Close Library">
+                            <PathIcon Data="{StaticResource IconClose}" Width="11" Height="11" />
+                        </Button>
+                    </Grid>
+
+                    <!-- Library Tabs: Windows Icons vs Custom Icon Library -->
+                    <Border Grid.Row="1" Background="{DynamicResource SurfaceHoverBrush}" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                        <Grid ColumnDefinitions="*,*">
+                            <Button Grid.Column="0"
+                                    Command="{Binding SelectLibraryTabCommand}"
+                                    CommandParameter="System"
+                                    Classes="source-tab"
+                                    Classes.selected="{Binding IsSystemTabSelected}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip.Tip="Built-in Windows system and device icons">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <PathIcon Data="{StaticResource IconIcons}" Width="13" Height="13" VerticalAlignment="Center" />
+                                    <TextBlock Text="Windows Icons" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Column="1"
+                                    Command="{Binding SelectLibraryTabCommand}"
+                                    CommandParameter="Curated"
+                                    Classes="source-tab"
+                                    Classes.selected="{Binding IsCuratedTabSelected}"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip.Tip="Curated custom icons for applications and folders">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <PathIcon Data="{StaticResource IconFolder}" Width="13" Height="13" VerticalAlignment="Center" />
+                                    <TextBlock Text="Custom Icon Library" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <!-- Category Pills, Dynamic Count & Search -->
+                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,12">
+                        <!-- Dynamic Category Chips with Distinct Selected States -->
+                        <ItemsControl Grid.Column="0" ItemsSource="{Binding Categories}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="m:CategoryFilterItem">
+                                    <Button Command="{Binding $parent[ItemsControl].((vm:IconsViewModel)DataContext).SelectCategoryCommand}"
+                                            CommandParameter="{Binding Name}"
+                                            Classes="category-chip"
+                                            Classes.selected="{Binding IsSelected}"
+                                            Content="{Binding Name}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- Verified Live Count Badge -->
+                        <Border Grid.Column="1"
+                                Classes="badge-pill"
+                                Background="{DynamicResource SurfaceHoverBrush}"
+                                BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="8,4"
+                                Margin="0,0,10,0"
+                                VerticalAlignment="Center">
+                            <TextBlock Text="{Binding LibraryDisplayedCount, StringFormat='{}{0} available'}"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </Border>
+
+                        <!-- Live Library Search -->
+                        <TextBox Grid.Column="2"
+                                 Text="{Binding LibrarySearchQuery, Mode=TwoWay}"
+                                 Watermark="Filter library..."
+                                 Width="180"
+                                 Height="32"
+                                 FontSize="11.5"
+                                 CornerRadius="6"
+                                 Padding="8,0"
+                                 BorderBrush="{DynamicResource BorderSubtleBrush}" />
+                    </Grid>
+
+                    <!-- Loading Progress -->
+                    <ProgressBar Grid.Row="3"
+                                 IsIndeterminate="True"
+                                 IsVisible="{Binding IsLibraryLoading}"
+                                 Height="2"
+                                 VerticalAlignment="Top" />
+
+                    <!-- Icons Grid ScrollViewer -->
+                    <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                        <Panel>
+                            <!-- View 1: Windows System Icons Grid -->
+                            <ItemsControl ItemsSource="{Binding DisplayedSystemIcons}"
+                                          IsVisible="{Binding IsSystemTabSelected}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="m:SystemIconItem">
+                                        <Border Classes="library-card"
+                                                Width="78"
+                                                Height="78"
+                                                Margin="0,0,8,8"
+                                                ToolTip.Tip="{Binding Title}">
+                                            <Button Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Command="{Binding $parent[ItemsControl].((vm:IconsViewModel)DataContext).SelectSystemIconCommand}"
+                                                    CommandParameter="{Binding .}">
+                                                <StackPanel Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Image Source="{Binding ThumbnailBitmap}"
+                                                               Width="32" Height="32"
+                                                               HorizontalAlignment="Center"
+                                                               IsVisible="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                        <PathIcon Data="{StaticResource IconIcons}"
+                                                                  Width="24" Height="24"
+                                                                  Foreground="{DynamicResource AccentBrandBrush}"
+                                                                  HorizontalAlignment="Center"
+                                                                  IsVisible="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNull}}" />
+                                                    </Panel>
+                                                    <TextBlock Text="{Binding Title}"
+                                                               FontSize="9.5"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               MaxWidth="70" />
+                                                </StackPanel>
+                                            </Button>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- View 2: Custom Icon Library Grid -->
+                            <ItemsControl ItemsSource="{Binding DisplayedCuratedIcons}"
+                                          IsVisible="{Binding IsCuratedTabSelected}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="m:WebIconItem">
+                                        <Border Classes="library-card"
+                                                Width="110"
+                                                Height="86"
+                                                Margin="0,0,10,10"
+                                                ToolTip.Tip="{Binding Description}">
+                                            <Button Background="Transparent"
+                                                    BorderThickness="0"
+                                                    Padding="0"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    Command="{Binding $parent[ItemsControl].((vm:IconsViewModel)DataContext).SelectWebIconCommand}"
+                                                    CommandParameter="{Binding .}">
+                                                <StackPanel Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Panel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Image Source="{Binding ThumbnailBitmap}"
+                                                               Width="36" Height="36"
+                                                               HorizontalAlignment="Center"
+                                                               IsVisible="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                                                        <PathIcon Data="{StaticResource IconFolder}"
+                                                                  Width="26" Height="26"
+                                                                  Foreground="{DynamicResource AccentBrandBrush}"
+                                                                  HorizontalAlignment="Center"
+                                                                  IsVisible="{Binding ThumbnailBitmap, Converter={x:Static ObjectConverters.IsNull}}" />
+                                                    </Panel>
+                                                    <TextBlock Text="{Binding Name}"
+                                                               FontSize="10.5"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                                               HorizontalAlignment="Center"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               MaxWidth="100" />
+                                                    <TextBlock Text="{Binding Category}"
+                                                               FontSize="9"
+                                                               Foreground="{DynamicResource TextMutedBrush}"
+                                                               HorizontalAlignment="Center" />
+                                                </StackPanel>
+                                            </Button>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Empty State for Search / Filter or Empty Collection -->
+                            <Border IsVisible="{Binding !LibraryDisplayedCount}"
+                                    Background="{DynamicResource SurfaceHoverBrush}"
+                                    BorderBrush="{DynamicResource BorderSubtleBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Padding="32"
+                                    Margin="0,20,0,0"
+                                    HorizontalAlignment="Center">
+                                <StackPanel Spacing="10" HorizontalAlignment="Center">
+                                    <PathIcon Data="{StaticResource IconIcons}"
+                                              Width="32" Height="32"
+                                              HorizontalAlignment="Center"
+                                              Foreground="{DynamicResource TextMutedBrush}" />
+                                    <TextBlock Text="No icons match your search or filter"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               IsVisible="{Binding LibrarySearchQuery.Length}" />
+                                    <TextBlock Text="No icons available in this collection"
+                                               FontSize="14"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextPrimaryBrush}"
+                                               IsVisible="{Binding !LibrarySearchQuery.Length}" />
+                                    <TextBlock Text="Try clearing your search term or switching to another category."
+                                               FontSize="11.5"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               IsVisible="{Binding LibrarySearchQuery.Length}" />
+                                    <TextBlock Text="This icon collection currently contains no usable icons."
+                                               FontSize="11.5"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                               IsVisible="{Binding !LibrarySearchQuery.Length}" />
+                                    <Button Command="{Binding ResetLibraryFiltersCommand}"
+                                            Classes="secondary-btn"
+                                            HorizontalAlignment="Center"
+                                            Margin="0,6,0,0"
+                                            Padding="14,6"
+                                            IsVisible="{Binding LibrarySearchQuery.Length}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <PathIcon Data="{StaticResource IconUndo}" Width="11" Height="11" VerticalAlignment="Center" />
+                                            <TextBlock Text="Reset Filters" FontSize="11.5" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </Panel>
+                    </ScrollViewer>
+
+                    <!-- Modal Footer -->
+                    <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="0,12,0,0">
+                        <TextBlock Grid.Column="0"
+                                   Text="Selecting an icon automatically prepares it and updates the preview in the Icon Customizer."
+                                   FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   VerticalAlignment="Center" />
+                        <Button Grid.Column="1"
+                                Command="{Binding CloseLibraryCommand}"
+                                Classes="secondary-btn"
+                                Content="Cancel" />
+                    </Grid>
+                </Grid>
             </Border>
-        </StackPanel>
-    </ScrollViewer>
+        </Grid>
+    </Panel>
 </UserControl>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -42,6 +42,11 @@ public partial class App : Application
             _galleryProvider = new OnlineGalleryProvider(new JsonCatalogProvider());
             _downloadService = new HttpDownloadService();
 
+            // Initialize Icon services
+            var iconPreferencesService = new JsonIconPreferencesService();
+            var iconService = new Services.WindowsIconService(iconPreferencesService);
+            IIconLibraryService iconLibraryService = OperatingSystem.IsWindows() ? new Services.WindowsIconLibraryService() : null!;
+
             // Wire theme changes to Avalonia's RequestedThemeVariant
             _themeService.ThemeChanged += (sender, preference) =>
             {
@@ -62,7 +67,10 @@ public partial class App : Application
                 _wallpaperPreferencesService,
                 _filePickerService,
                 _galleryProvider,
-                _downloadService
+                _downloadService,
+                iconService,
+                iconPreferencesService,
+                iconLibraryService
             );
 
             // Construct main ViewModel
@@ -89,7 +97,10 @@ public partial class App : Application
         IWallpaperPreferencesService wallpaperPreferencesService,
         IFilePickerService filePickerService,
         IGalleryProvider galleryProvider,
-        IDownloadService downloadService)
+        IDownloadService downloadService,
+        IIconService iconService,
+        IIconPreferencesService iconPreferencesService,
+        IIconLibraryService iconLibraryService)
     {
         navigationService.RegisterPage(NavigationPageKey.Home, () => new HomeViewModel(navigationService));
         navigationService.RegisterPage(NavigationPageKey.Wallpapers, () => new WallpapersViewModel(
@@ -105,7 +116,12 @@ public partial class App : Application
             return vm;
         });
         navigationService.RegisterPage(NavigationPageKey.LiveWallpapers, () => new LiveWallpapersViewModel());
-        navigationService.RegisterPage(NavigationPageKey.Icons, () => new IconsViewModel());
+        navigationService.RegisterPage(NavigationPageKey.Icons, () =>
+        {
+            var vm = new IconsViewModel(iconService, iconPreferencesService, filePickerService, errorService, iconLibraryService);
+            _ = vm.InitializeAsync();
+            return vm;
+        });
         navigationService.RegisterPage(NavigationPageKey.Layouts, () => new LayoutsViewModel());
         navigationService.RegisterPage(NavigationPageKey.Themes, () => new ThemesViewModel());
         navigationService.RegisterPage(NavigationPageKey.Widgets, () => new WidgetsViewModel());
@@ -113,3 +129,4 @@ public partial class App : Application
         navigationService.RegisterPage(NavigationPageKey.About, () => new AboutViewModel());
     }
 }
+

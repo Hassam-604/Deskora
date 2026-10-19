@@ -62,4 +62,35 @@ public class AvaloniaFilePickerService : IFilePickerService
         var folders = await storage.OpenFolderPickerAsync(options);
         return folders.FirstOrDefault()?.Path.LocalPath;
     }
+
+    public async Task<string?> PickIconFileAsync()
+    {
+        var storage = GetStorageProvider();
+        if (storage == null) return null;
+
+        var options = new FilePickerOpenOptions
+        {
+            Title = "Select Custom Icon — Deskora",
+            AllowMultiple = false,
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                new("Windows Icons & Resource Libraries (*.ico, *.dll, *.exe)")
+                {
+                    Patterns = new[] { "*.ico", "*.dll", "*.exe" },
+                    MimeTypes = new[] { "image/x-icon", "image/vnd.microsoft.icon", "application/x-msdownload" }
+                },
+                new("Standard Icons (*.ico)")
+                {
+                    Patterns = new[] { "*.ico" }
+                },
+                new("All Files (*.*)")
+                {
+                    Patterns = new[] { "*.*" }
+                }
+            }
+        };
+
+        var files = await storage.OpenFilePickerAsync(options);
+        return files.FirstOrDefault()?.Path.LocalPath;
+    }
 }

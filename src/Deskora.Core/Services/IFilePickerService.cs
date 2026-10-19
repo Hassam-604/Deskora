@@ -11,4 +11,7 @@ public interface IFilePickerService
 
     /// <summary>Prompts user to select a folder containing wallpapers. Returns folder path or null if cancelled.</summary>
     Task<string?> PickFolderAsync();
+
+    /// <summary>Prompts user to select an icon file (.ico, .dll, .exe). Returns file path or null if cancelled.</summary>
+    Task<string?> PickIconFileAsync();
 }

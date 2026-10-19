@@ -383,7 +383,10 @@ public partial class GalleryViewModel : ViewModelBase
         {
             var progress = new Progress<double>(p =>
             {
-                rec.ProgressPercent = p;
+                if (rec.State == DownloadState.Downloading)
+                {
+                    rec.ProgressPercent = p;
+                }
             });
 
             var result = await _downloadService.DownloadEntryAsync(entry, progress, cts.Token);
